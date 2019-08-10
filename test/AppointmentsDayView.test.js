@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Appointment, AppointmentsDayView } from '../src/Appointment';
+import { Appointment, AppointmentsDayView } from '../src/AppointmentsDayView';
 import ReactTestUtils from 'react-dom/test-utils';
 
 describe('Appointment', () => {
@@ -19,6 +19,31 @@ describe('Appointment', () => {
 			customer =  { firstName: 'Jordan' };
 			render(<Appointment customer={customer} />);
 		expect(container.textContent).toMatch('Jordan');
+		});
+	it('renders the customer last name', () => {
+		customer = { firstName: 'Jordan', lastName: 'Butler' };
+		render(<Appointment customer={customer} />);
+		expect(container.textContent).toMatch('Butler');
+	});
+	it('renders the stylist name', () => {
+		customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane' };
+		render(<Appointment customer={customer} />);
+		expect(container.textContent).toMatch('Jane');
+	});
+	it('renders the customer phone number', () => {
+		customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814' };
+				render(<Appointment customer={customer} />);
+		expect(container.textContent).toMatch('(554)338-1814');
+	});
+		it('renders the service ordered', () => {
+			customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut' };
+				render(<Appointment customer={customer} />);
+		expect(container.textContent).toMatch('haircut');
+		});
+			it('renders the appointment notes', () => {
+				customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut', notes: ' Give Jordan his hat that he forgot here last week'  };
+				render(<Appointment customer={customer} />);
+		expect(container.textContent).toMatch(' Give Jordan his hat that he forgot here last week');
 	});
 });
 
