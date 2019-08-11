@@ -4,47 +4,63 @@ import { Appointment, AppointmentsDayView } from '../src/AppointmentsDayView';
 import ReactTestUtils from 'react-dom/test-utils';
 
 describe('Appointment', () => {
-	let customer;
+	let customer = {};
 	let container;
 	beforeEach(() => {
 		container = document.createElement('div');
 	});
 	const render = component => ReactDOM.render(component, container);
+
+	 const appointmentTable = () =>
+    container.querySelector('#appointmentView > table');
+
+	it('renders a table', () => {
+		render(<Appointment customer={ customer } />);
+		expect(appointmentTable()).not.toBeNull();
+	});
+	
 	it('renders the customer first name', () => {
 		customer =  { firstName: 'Ashley' };
 		render(<Appointment customer={customer} />);
-		expect(container.textContent).toMatch('Ashley');
+		expect(appointmentTable().textContent).toMatch('Ashley');
 	});
-		it('renders another customer first name', () => {
+		it('rendersss another customer first name', () => {
 			customer =  { firstName: 'Jordan' };
 			render(<Appointment customer={customer} />);
-		expect(container.textContent).toMatch('Jordan');
+			expect(appointmentTable().textContent).toMatch('Jordan');
 		});
 	it('renders the customer last name', () => {
 		customer = { firstName: 'Jordan', lastName: 'Butler' };
 		render(<Appointment customer={customer} />);
-		expect(container.textContent).toMatch('Butler');
+		expect(appointmentTable().textContent).toMatch('Butler');
 	});
 	it('renders the stylist name', () => {
 		customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane' };
 		render(<Appointment customer={customer} />);
-		expect(container.textContent).toMatch('Jane');
+		expect(appointmentTable().textContent).toMatch('Jane');
 	});
 	it('renders the customer phone number', () => {
 		customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814' };
 				render(<Appointment customer={customer} />);
-		expect(container.textContent).toMatch('(554)338-1814');
+		expect(appointmentTable().textContent).toMatch('(554)338-1814');
 	});
 		it('renders the service ordered', () => {
 			customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut' };
 				render(<Appointment customer={customer} />);
-		expect(container.textContent).toMatch('haircut');
+			expect(appointmentTable().textContent).toMatch('haircut');
 		});
 			it('renders the appointment notes', () => {
-				customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut', notes: ' Give Jordan his hat that he forgot here last week'  };
+				customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut', notes: ' Give Jordan his hat he forgot here last week'  };
 				render(<Appointment customer={customer} />);
-		expect(container.textContent).toMatch(' Give Jordan his hat that he forgot here last week');
-	});
+				expect(appointmentTable().textContent).toMatch(' Give Jordan his hat he forgot here last week');
+			});
+	it('renders the appointment time as heading', () => {
+		customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut', notes: ' Give Jordan his hat he forgot here last week'  };
+		const today = new Date();
+		const startsAt = today.setHours(12, 0);
+		render(<Appointment customer={ customer } startsAt={ startsAt } />);
+		expect(container.querySelector('h2').textContent).toEqual('12:00');
+	});	
 });
 
 describe('AppointmentsDayView', () => {
@@ -95,6 +111,5 @@ describe('AppointmentsDayView', () => {
     const button = container.querySelectorAll('button')[1];
     ReactTestUtils.Simulate.click(button);
     expect(container.textContent).toMatch('Jordan');
-    
   });
-});
+ });

@@ -4,10 +4,22 @@ const appointmentTimeOfDay = startsAt => {
   const [h, m] = new Date(startsAt).toTimeString().split(':');
   return `${h}:${m}`;
 };
-      
 
-export const Appointment = ({ customer }) =>
-  <div>
+const Counter = () => {
+  const [ count, setCount ] = useState(0);
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+};
+
+export const Appointment = ({ customer, startsAt }) =>
+  <div id='appointmentView'>
+    <h2>{appointmentTimeOfDay(startsAt)}</h2>
     <table>
       <tbody>
         <tr>
@@ -43,7 +55,7 @@ export const AppointmentsDayView = ({ appointments }) => {
   );
   return(
     <div id="appointmentsDayView">
-    <ol>
+      <ol>
       {appointments.map((appointment, i)  =>
         <li key={appointment.startsAt}>
           <button type='button' onClick={() => setSelectedAppointment(i)}>
@@ -54,6 +66,7 @@ export const AppointmentsDayView = ({ appointments }) => {
       <p>There are no appointments scheduled for today.</p>)
       : (
         <Appointment {...appointments[selectedAppointment]} />)}
-           </div>
+ <Counter />
+    </div>
   );
 };
