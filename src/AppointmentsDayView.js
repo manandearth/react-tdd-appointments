@@ -17,7 +17,13 @@ const Counter = () => {
   );
 };
 
-export const Appointment = ({ customer, startsAt }) =>
+export const Appointment = ({
+  customer,
+  service,
+  stylist,
+  startsAt,
+  notes
+}) =>
   <div id='appointmentView'>
     <h2>{appointmentTimeOfDay(startsAt)}</h2>
     <table>
@@ -32,7 +38,7 @@ export const Appointment = ({ customer, startsAt }) =>
         </tr>
         <tr>
           <td>Stylist:</td>
-          <td>{customer.stylist}</td>
+          <td>{stylist}</td>
         </tr>
         <tr>
           <td>Phone number:</td>
@@ -40,11 +46,11 @@ export const Appointment = ({ customer, startsAt }) =>
         </tr>
         <tr>
           <td>Salon service:</td>
-          <td>{customer.service}</td>
+          <td>{service}</td>
         </tr>
                 <tr>
           <td>Notes:</td>
-          <td>{customer.notes}</td>
+          <td>{notes}</td>
         </tr>
       </tbody>
     </table></div>;

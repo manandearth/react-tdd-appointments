@@ -34,28 +34,29 @@ describe('Appointment', () => {
 		render(<Appointment customer={customer} />);
 		expect(appointmentTable().textContent).toMatch('Butler');
 	});
-	it('renders the stylist name', () => {
-		customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane' };
-		render(<Appointment customer={customer} />);
-		expect(appointmentTable().textContent).toMatch('Jane');
-	});
 	it('renders the customer phone number', () => {
-		customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814' };
+		customer = { phoneNumber: '(554)338-1814' };
 				render(<Appointment customer={customer} />);
 		expect(appointmentTable().textContent).toMatch('(554)338-1814');
 	});
 		it('renders the service ordered', () => {
-			customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut' };
-				render(<Appointment customer={customer} />);
-			expect(appointmentTable().textContent).toMatch('haircut');
+			customer = { customer };
+				render(<Appointment customer={customer} service='Cut' />);
+			expect(appointmentTable().textContent).toMatch('Cut');
 		});
+	it('renders the stylists name', () => {
+		customer = { customer };
+		render(<Appointment customer={customer} service='Cut' stylist='Jane' />);
+					expect(appointmentTable().textContent).toMatch('Jane');
+	});
 			it('renders the appointment notes', () => {
-				customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut', notes: ' Give Jordan his hat he forgot here last week'  };
-				render(<Appointment customer={customer} />);
-				expect(appointmentTable().textContent).toMatch(' Give Jordan his hat he forgot here last week');
+				customer = { customer };
+				const notes = 'Give Jordan his hat he forgot here last week';
+				render(<Appointment customer={customer} notes={notes}/>);
+				expect(appointmentTable().textContent).toMatch('Give Jordan his hat he forgot here last week');
 			});
 	it('renders the appointment time as heading', () => {
-		customer = { firstName: 'Jordan', lastName: 'Butler', stylist: 'Jane', phoneNumber: '(554)338-1814', service: 'haircut', notes: ' Give Jordan his hat he forgot here last week'  };
+		customer = { customer };
 		const today = new Date();
 		const startsAt = today.setHours(12, 0);
 		render(<Appointment customer={ customer } startsAt={ startsAt } />);
