@@ -25,16 +25,12 @@ export const Appointment = ({
   notes
 }) =>
   <div id='appointmentView'>
-    <h2>{appointmentTimeOfDay(startsAt)}</h2>
+    <h3>Today&rsquo;s appointment at {appointmentTimeOfDay(startsAt)}</h3>
     <table>
       <tbody>
         <tr>
-          <td>First name:</td>
-          <td>{customer.firstName}</td>
-        </tr>
-        <tr>
-          <td>Last name:</td>
-          <td>{customer.lastName}</td>
+          <td>Customer</td>
+          <td>{customer.firstName} {customer.lastName}</td>
         </tr>
         <tr>
           <td>Stylist:</td>

@@ -60,7 +60,7 @@ describe('Appointment', () => {
 		const today = new Date();
 		const startsAt = today.setHours(12, 0);
 		render(<Appointment customer={ customer } startsAt={ startsAt } />);
-		expect(container.querySelector('h2').textContent).toEqual('12:00');
+		expect(container.querySelector('h3').textContent).toMatch('12:00');
 	});	
 });
 
