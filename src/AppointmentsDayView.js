@@ -1,20 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const appointmentTimeOfDay = startsAt => {
   const [h, m] = new Date(startsAt).toTimeString().split(':');
   return `${h}:${m}`;
-};
-
-const Counter = () => {
-  const [ count, setCount ] = useState(0);
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>
-        Click me
-      </button>
-    </div>
-  );
 };
 
 export const Appointment = ({
@@ -68,7 +56,6 @@ export const AppointmentsDayView = ({ appointments }) => {
       <p>There are no appointments scheduled for today.</p>)
       : (
         <Appointment {...appointments[selectedAppointment]} />)}
- <Counter />
     </div>
   );
 };
