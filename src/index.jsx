@@ -4,6 +4,6 @@ import { AppointmentsDayView } from './AppointmentsDayView';
 import { sampleAppointments } from './sampleData';
 
 ReactDOM.render(
-		<AppointmentsDayView appointments={ sampleAppointments } />,
-	document.getElementById('root')
+  <AppointmentsDayView appointments={sampleAppointments} />,
+  document.getElementById('root')
 );
