@@ -18,60 +18,56 @@ describe('CustomerForm', () => {
     expect(formElement.type).toEqual('text');
   };
 
-  const field = (name) => form('customer').elements[name];
-
   it('renders a form', () => {
     render(<CustomerForm />);
     expect(form('customer')).not.toBeNull();
   });
+
+  const field = (name) => form('customer').elements[name];
+
+  const itRendersAsATextBox = (fieldName) => it('renders as a test box', () => {
+    render(<CustomerForm />);
+    expectToBeInputFieldOfTypeText(field(fieldName));
+  });
+  const itIncludesTheExistingValue = (fieldName) => it('includes the existing value', () => {
+    render(<CustomerForm {...{ [fieldName]: 'value' }} />);
+    expect(field(fieldName).value).toEqual('value');
+  });
+  const labelFor = (formElement) => container.querySelector(`label[for="${formElement}"]`);
+  const itRendersALabel = (fieldName) => it('renders a label', () => {
+    render(<CustomerForm />);
+    expect(labelFor(fieldName)).not.toBeNull();
+  });
+  const itAssignsAnIdThatMatchesTheLabelId = (fieldName) => it('assigns an id that matches the label id', () => {
+    render(<CustomerForm />);
+    expect(field(fieldName).id).toEqual(fieldName);
+  });
+  const itSavesWhenSubmitted = (fieldName, value) => it('saves when submitted', async () => {
+    expect.hasAssertions();
+    render(<CustomerForm
+      {...{ [fieldName]: value }}
+      onSubmit={(props) => expect(props[fieldName]).toEqual(value)}
+    />);
+    await ReactTestUtils.Simulate.submit(form('customer'));
+  });
+  const itSavesNewWhenSubmitted = (fieldName, newValue) => it('saves new when submitted', async () => {
+    expect.hasAssertions();
+    render(<CustomerForm
+      {...{ [fieldName]: 'existing value' }}
+      onSubmit={(props) => expect(props[fieldName]).toEqual(newValue)}
+    />);
+		 await ReactTestUtils.Simulate.change(field(fieldName), {
+      target: { value: newValue },
+    });
+    await ReactTestUtils.Simulate.submit(form('customer'));
+  });
+
   describe('first name field', () => {
-    const itRendersAsATextBox = (fieldName) => it('renders as a test box', () => {
-      render(<CustomerForm />);
-      expectToBeInputFieldOfTypeText(field(fieldName));
-    });
     itRendersAsATextBox('firstName');
-
-    const itIncludesTheExistingValue = () => it('includes the existing value', () => {
-      render(<CustomerForm firstName="Ashley" />);
-
-      expect(field('firstName').value).toEqual('Ashley');
-    });
-    itIncludesTheExistingValue();
-
-    const labelFor = (formElement) => container.querySelector(`label[for="${formElement}"]`);
-    const itRendersALabel = () => it('renders a label', () => {
-      render(<CustomerForm />);
-      expect(labelFor('firstName')).not.toBeNull();
-    });
-    itRendersALabel();
-
-    const itAssignsAnIdThatMatchesTheLabelId = () => it('assigns an id that matches the label id', () => {
-      render(<CustomerForm />);
-      expect(field('firstName').id).toEqual('firstName');
-    });
-    itAssignsAnIdThatMatchesTheLabelId();
-
-    const itSavesWhenSubmitted = () => it('saves when submitted', async () => {
-      expect.hasAssertions();
-      render(<CustomerForm
-        firstName="Ashley"
-        onSubmit={({ firstName }) => expect(firstName).toEqual('Ashley')}
-      />);
-      await ReactTestUtils.Simulate.submit(form('customer'));
-    });
-    itSavesWhenSubmitted();
-
-    const itSavesNewWhenSubmitted = () => it('saves new when submitted', async () => {
-      expect.hasAssertions();
-      render(<CustomerForm
-        firstName="Ashley"
-        onSubmit={({ firstName }) => expect(firstName).toEqual('Jamie')}
-      />);
-		 await ReactTestUtils.Simulate.change(field('firstName'), {
-        target: { value: 'Jamie' },
-      });
-      await ReactTestUtils.Simulate.submit(form('customer'));
-    });
-    itSavesNewWhenSubmitted();
+    itIncludesTheExistingValue('firstName');
+    itRendersALabel('firstName');
+    itAssignsAnIdThatMatchesTheLabelId('firstName');
+    itSavesWhenSubmitted('firstName', 'Ashley');
+    itSavesNewWhenSubmitted('firstName', 'aha!');
   });
 });
