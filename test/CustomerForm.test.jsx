@@ -70,4 +70,24 @@ describe('CustomerForm', () => {
     itSavesWhenSubmitted('firstName', 'Ashley');
     itSavesNewWhenSubmitted('firstName', 'aha!');
   });
+
+
+  describe('last name field', () => {
+    itRendersAsATextBox('lastName');
+    itIncludesTheExistingValue('lastName');
+    itRendersALabel('lastName');
+    itAssignsAnIdThatMatchesTheLabelId('lastName');
+    itSavesWhenSubmitted('lastName', 'Franklin');
+    itSavesNewWhenSubmitted('lastName', 'aha!');
+  });
+
+
+  describe('phone number', () => {
+    itRendersAsATextBox('phoneNumber');
+    itIncludesTheExistingValue('phoneNumber');
+    itRendersALabel('phoneNumber');
+    itAssignsAnIdThatMatchesTheLabelId('phoneNumber');
+    itSavesWhenSubmitted('phoneNumber', '12345678');
+    itSavesNewWhenSubmitted('phoneNumber', '09876543');
+  });
 });
