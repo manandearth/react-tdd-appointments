@@ -34,7 +34,6 @@ export const CustomerForm = ({
         id="phoneNumber"
         value={phoneNumber}
         onChange={(e) => handleChangeText(e, 'phoneNumber')}
-        readOnly
       />
 
 
