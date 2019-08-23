@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
 
 export const AppointmentForm = ({ selectableServices, service, onSubmit }) => {
-  const [selected, setSelected] = useState({ service });
-  const handleServiceChange = ({ target }) => setSelected(target.value);
+  const [appointment, setAppointment] = useState({ service });
+  const handleServiceChange = ({ target: { value } }) => setAppointment(
+    {
+      ...appointment,
+      service: value,
+    }
+  );
   return (
-    <form id="appointment" onSubmit={() => onSubmit(selected)}>
+    <form id="appointment" onSubmit={() => onSubmit(appointment)}>
       <label htmlFor="service">Service</label>
       <select
         name="service"
-        value={selected.service}
+        value={appointment.service}
         id="service"
-        onChange={(e) => handleServiceChange(e)}
-        readOnly
+        onChange={handleServiceChange}
+        /* readOnly */
       >
         <option />
         {selectableServices.map((s) => (<option key={s}>{s}</option>))}

@@ -79,5 +79,14 @@ describe('AppointmentForm', () => {
       />);
       await ReactTestUtils.Simulate.submit(form('appointment'));
     });
+    it('saves a new value when submitted', async () => {
+      expect.hasAssertions();
+      render(<AppointmentForm
+        service="Blow-dry"
+        onSubmit={(props) => expect(props.service).toEqual('Beard trim')}
+      />);
+      await ReactTestUtils.Simulate.change(field('service'), { target: { value: 'Beard trim' } });
+      await ReactTestUtils.Simulate.submit(form('appointment'));
+    });
   });
 });
