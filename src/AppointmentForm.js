@@ -27,7 +27,38 @@ const toShortDate = (timeStamp) => {
   return `${day} ${dayOfMonth}`;
 };
 
-const TimeSlotTable = ({ salonOpensAt, salonClosesAt, today }) => {
+const mergeDateAndTime = (date, timeSlot) => {
+  const time = new Date(timeSlot);
+  return new Date(date).setHours(
+    time.getHours(),
+    time.getMinutes(),
+    time.getSeconds(),
+    time.getMilliseconds()
+  );
+};
+
+const RadioButtonIfAvailable = ({ availableTimeSlots, date, timeSlot }) => {
+  const startsAt = mergeDateAndTime(date, timeSlot);
+  if (availableTimeSlots.some((availableTimeSlot) => availableTimeSlot.startsAt === startsAt)
+  ) {
+    return (
+      <input
+        type="radio"
+        name="startsAt"
+        value={startsAt}
+      />
+    );
+  }
+
+  return null;
+};
+
+const TimeSlotTable = ({
+  salonOpensAt,
+  salonClosesAt,
+  today,
+  availableTimeSlots,
+}) => {
   const timeSlots = dailyTimeSlots(salonOpensAt, salonClosesAt);
   const dates = weeklyDateValues(today);
   return (
@@ -43,6 +74,15 @@ const TimeSlotTable = ({ salonOpensAt, salonClosesAt, today }) => {
         {timeSlots.map((timeSlot) => (
           <tr key={timeSlot}>
             <th>{toTimeValue(timeSlot)}</th>
+            {dates.map((date) => (
+              <td key={date}>
+                <RadioButtonIfAvailable
+                  availableTimeSlots={availableTimeSlots}
+                  date={date}
+                  timeSlot={timeSlot}
+                />
+              </td>
+            ))}
           </tr>
         ))}
       </tbody>
@@ -57,6 +97,7 @@ export const AppointmentForm = ({
   salonOpensAt,
   salonClosesAt,
   today,
+  availableTimeSlots,
 }) => {
   const dates = weeklyDateValues(today);
   const [appointment, setAppointment] = useState({ service });
@@ -83,11 +124,13 @@ export const AppointmentForm = ({
         salonOpensAt={salonOpensAt}
         salonClosesAt={salonClosesAt}
         today={today}
+        availableTimeSlots={availableTimeSlots}
       />
     </form>
   );
 };
 AppointmentForm.defaultProps = {
+  availableTimeSlots: [],
   today: new Date(),
   salonOpensAt: 9,
   salonClosesAt: 19,

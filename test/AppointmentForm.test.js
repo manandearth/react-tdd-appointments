@@ -91,6 +91,11 @@ describe('AppointmentForm', () => {
   });
   describe('time slot table', () => {
     const timeSlotTable = () => container.querySelector('table#timeslots');
+
+    const startsAtField = (index) => container.querySelectorAll('input[name="startsAt"]') [
+      index
+    ];
+
     it('renders a table for timeslots', () => {
       render(<AppointmentForm />);
       expect(timeSlotTable()).not.toBeNull();
@@ -120,6 +125,42 @@ describe('AppointmentForm', () => {
       expect(dates[0].textContent).toEqual('Sat 01');
       expect(dates[1].textContent).toEqual('Sun 02');
       expect(dates[6].textContent).toEqual('Fri 07');
+    });
+    it('renders a radio button for each available time slot', () => {
+      const today = new Date();
+      const availableTimeSlots = [
+        { startsAt: today.setHours(9, 0, 0, 0) },
+        { startsAt: today.setHours(9, 30, 0, 0) },
+      ];
+      render(<AppointmentForm
+        availableTimeSlots={availableTimeSlots}
+        today={today}
+      />);
+      const cells = timeSlotTable().querySelectorAll('td');
+      expect(cells[0].querySelector('input[type="radio"]')).not.toBeNull();
+      expect(cells[7].querySelector('input[type="radio"]')).not.toBeNull();
+    });
+    it('renders no radio buttons foe unavailable time slots', () => {
+      render(<AppointmentForm availableTimeSlots={[]} />);
+      const timesOfDay = timeSlotTable().querySelectorAll('input');
+      expect(timesOfDay).toHaveLength(0);
+    });
+    it('sets radio button value to the index of the corresponding appointment', () => {
+      const today = new Date();
+      const availableTimeSlots = [
+        { startsAt: today.setHours(9, 0, 0, 0) },
+        { startsAt: today.setHours(9, 30, 0, 0) },
+      ];
+      render(<AppointmentForm
+        availableTimeSlots={availableTimeSlots}
+        today={today}
+      />);
+      expect(startsAtField(0).value).toEqual(
+        availableTimeSlots[0].startsAt.toString()
+      );
+      expect(startsAtField(1).value).toEqual(
+        availableTimeSlots[1].startsAt.toString()
+      );
     });
   });
 });
