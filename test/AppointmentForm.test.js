@@ -90,7 +90,7 @@ describe('AppointmentForm', () => {
     });
   });
   describe('time slot table', () => {
-    const timeSlotTable = () => container.querySelector('table#timeslots');
+    const timeSlotTable = () => container.querySelector('table#time-slots');
 
     const startsAtField = (index) => container.querySelectorAll('input[name="startsAt"]') [
       index
