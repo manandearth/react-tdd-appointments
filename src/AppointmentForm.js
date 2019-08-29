@@ -68,7 +68,7 @@ const TimeSlotTable = ({
   const timeSlots = dailyTimeSlots(salonOpensAt, salonClosesAt);
   const dates = weeklyDateValues(today);
   return (
-    <table id="timeslots">
+    <table id="time-slots">
       <thead>
         <tr>
           <th />
