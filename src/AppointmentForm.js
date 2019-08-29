@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 const timeIncrement = (numTimes, startTime, increment) => Array(numTimes)
   .fill([startTime])
@@ -37,19 +37,23 @@ const mergeDateAndTime = (date, timeSlot) => {
   );
 };
 
-const RadioButtonIfAvailable = ({ availableTimeSlots, date, timeSlot }) => {
+
+const RadioButtonIfAvailable = ({
+  availableTimeSlots, date, timeSlot, checkedTimeSlot, handleChange,
+}) => {
   const startsAt = mergeDateAndTime(date, timeSlot);
-  if (availableTimeSlots.some((availableTimeSlot) => availableTimeSlot.startsAt === startsAt)
-  ) {
+  if (availableTimeSlots.some((a) => a.startsAt === startsAt)) {
+    const isChecked = startsAt === checkedTimeSlot;
     return (
       <input
-        type="radio"
         name="startsAt"
+        type="radio"
         value={startsAt}
+        onChange={handleChange}
+        checked
       />
     );
   }
-
   return null;
 };
 
@@ -58,6 +62,8 @@ const TimeSlotTable = ({
   salonClosesAt,
   today,
   availableTimeSlots,
+  checkedTimeSlot,
+  handleChange,
 }) => {
   const timeSlots = dailyTimeSlots(salonOpensAt, salonClosesAt);
   const dates = weeklyDateValues(today);
@@ -80,6 +86,8 @@ const TimeSlotTable = ({
                   availableTimeSlots={availableTimeSlots}
                   date={date}
                   timeSlot={timeSlot}
+                  checkedTimeSlot={checkedTimeSlot}
+                  handleChange={handleChange}
                 />
               </td>
             ))}
@@ -98,15 +106,27 @@ export const AppointmentForm = ({
   salonClosesAt,
   today,
   availableTimeSlots,
+  startsAt,
 }) => {
   const dates = weeklyDateValues(today);
-  const [appointment, setAppointment] = useState({ service });
+  const [appointment, setAppointment] = useState({
+    service,
+    startsAt,
+  });
   const handleServiceChange = ({ target: { value } }) => setAppointment(
     {
       ...appointment,
       service: value,
     }
   );
+  const handleStartsAtChange = useCallback(
+    ({ target: { value } }) => setAppointment((appointment) => ({
+      ...appointment,
+      startsAt: parseInt(value),
+    })), []
+  );
+
+
   return (
     <form id="appointment" onSubmit={() => onSubmit(appointment)}>
       <label htmlFor="service">Service</label>
@@ -115,7 +135,7 @@ export const AppointmentForm = ({
         value={appointment.service}
         id="service"
         onChange={handleServiceChange}
-        /* readOnly */
+        readOnly
       >
         <option />
         {selectableServices.map((s) => (<option key={s}>{s}</option>))}
@@ -125,6 +145,8 @@ export const AppointmentForm = ({
         salonClosesAt={salonClosesAt}
         today={today}
         availableTimeSlots={availableTimeSlots}
+        checkedTimeSlot={appointment.startsAt}
+        handleChange={handleStartsAtChange}
       />
     </form>
   );
