@@ -212,6 +212,7 @@ describe('AppointmentForm', () => {
         },
       });
       ReactTestUtils.Simulate.submit(form('appointment'));
+      expect(startsAtField(0).checked).toEqual(true);
     });
   });
 });
