@@ -135,6 +135,11 @@ export const AppointmentForm = ({
     })), []
   );
 
+  const renderableServices = (stylist) => {
+    const selectedStylist = selectableStylists.filter((s) => (
+      s.name === stylist));
+    return selectedStylist.services;
+  };
 
   return (
     <form id="appointment" onSubmit={() => onSubmit(appointment)}>
@@ -158,7 +163,9 @@ export const AppointmentForm = ({
         onChange={handleServiceChange}
       >
         <option />
-        {selectableServices.map((s) => (<option key={s}>{s}</option>))}
+        {appointment.stylist
+          ? selectableStylists.filter((s) => s.name === appointment.stylist)[0].services.map((service) => <option key={service}>{service}</option>)
+          : selectableServices.map((t) => <option key={t}>{t}</option>)}
       </select>
 
       <TimeSlotTable
