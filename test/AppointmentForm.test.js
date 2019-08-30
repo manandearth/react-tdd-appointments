@@ -113,53 +113,53 @@ describe('AppointmentForm', () => {
       expect(firstNode.value).toEqual('');
       expect(firstNode.selected).toBeTruthy();
     });
-    it('lists all stylists', () => {
-      const selectableStylists = [
-        'Jon',
-        'Jane'];
-      render(
-        <AppointmentForm
-          selectableStylists={selectableStylists}
-        />
-      );
-      const optionNodes = Array.from(
-        field('stylist').childNodes
-      );
-      const renderedStylists = optionNodes.map((node) => node.textContent);
-      expect(renderedStylists).toEqual(
-        expect.arrayContaining(selectableStylists)
-      );
-    });
-    it('preselects the existing value', () => {
-      const stylists = ['Jon', 'Jeff'];
-      render(<AppointmentForm
-        selectableStylists={stylists}
-        stylist="Jon"
-      />);
-      const option = findOption(field('stylist'), 'Jon');
-      expect(option.selected).toBeTruthy();
-    });
-    it('assigns an id that matches the label id', () => {
-      render(<AppointmentForm />);
-      expect(field('stylist').id).toEqual('stylist');
-    });
-    it('saves existing value when submitted', async () => {
-      expect.hasAssertions();
-      render(<AppointmentForm
-        stylist="Pepe"
-        onSubmit={(props) => expect(props.stylist).toEqual('Pepe')}
-      />);
-      await ReactTestUtils.Simulate.submit(form('appointment'));
-    });
-    it('saves a new value when submitted', async () => {
-      expect.hasAssertions();
-      render(<AppointmentForm
-        stylist="Jon"
-        onSubmit={(props) => expect(props.stylist).toEqual('Geoff')}
-      />);
-      await ReactTestUtils.Simulate.change(field('stylist'), { target: { value: 'Geoff' } });
-      await ReactTestUtils.Simulate.submit(form('appointment'));
-    });
+    // it('lists all stylists', () => {
+    //   const selectableStylists = [
+    //     'Jon',
+    //     'Jane'];
+    //   render(
+    //     <AppointmentForm
+    //       selectableStylists={selectableStylists}
+    //     />
+    //   );
+    //   const optionNodes = Array.from(
+    //     field('stylist').childNodes
+    //   );
+    //   const renderedStylists = optionNodes.map((node) => node.textContent);
+    //   expect(renderedStylists).toEqual(
+    //     expect.arrayContaining(selectableStylists)
+    //   );
+    // });
+    // it('preselects the existing value', () => {
+    //   const stylists = ['Jon', 'Jeff'];
+    //   render(<AppointmentForm
+    //     selectableStylists={stylists}
+    //     stylist="Jon"
+    //   />);
+    //   const option = findOption(field('stylist'), 'Jon');
+    //   expect(option.selected).toBeTruthy();
+    // });
+    // it('assigns an id that matches the label id', () => {
+    //   render(<AppointmentForm />);
+    //   expect(field('stylist').id).toEqual('stylist');
+    // });
+    // it('saves existing value when submitted', async () => {
+    //   expect.hasAssertions();
+    //   render(<AppointmentForm
+    //     stylist="Pepe"
+    //     onSubmit={(props) => expect(props.stylist).toEqual('Pepe')}
+    //   />);
+    //   await ReactTestUtils.Simulate.submit(form('appointment'));
+    // });
+    // it('saves a new value when submitted', async () => {
+    //   expect.hasAssertions();
+    //   render(<AppointmentForm
+    //     stylist="Jon"
+    //     onSubmit={(props) => expect(props.stylist).toEqual('Geoff')}
+    //   />);
+    //   await ReactTestUtils.Simulate.change(field('stylist'), { target: { value: 'Geoff' } });
+    //   await ReactTestUtils.Simulate.submit(form('appointment'));
+    // });
   });
 
   describe('time slot table', () => {
