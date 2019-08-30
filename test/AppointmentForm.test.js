@@ -89,6 +89,21 @@ describe('AppointmentForm', () => {
       await ReactTestUtils.Simulate.submit(form('appointment'));
     });
   });
+  describe('stylist field', () => {
+    const field = (name) => form('appointment').elements[name];
+    const findOption = (dropdownNode, textContent) => {
+      const options = Array.from(dropdownNode.childNodes);
+      return options.find(
+        (option) => option.textContent === textContent
+      );
+    };
+    const labelFor = (formElement) => container.querySelector(`label[for="${formElement}"]`);
+    it('renders as a select box', () => {
+      render(<AppointmentForm />);
+      expect(field('stylist')).not.toBeNull();
+      expect(field('stylist').tagName).toEqual('SELECT');
+    });
+  });
   describe('time slot table', () => {
     const timeSlotTable = () => container.querySelector('table#time-slots');
 

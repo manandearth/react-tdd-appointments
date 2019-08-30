@@ -140,6 +140,9 @@ export const AppointmentForm = ({
         <option />
         {selectableServices.map((s) => (<option key={s}>{s}</option>))}
       </select>
+      <select
+        name="stylist"
+      />
       <TimeSlotTable
         salonOpensAt={salonOpensAt}
         salonClosesAt={salonClosesAt}
