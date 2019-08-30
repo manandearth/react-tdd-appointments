@@ -103,7 +103,35 @@ describe('AppointmentForm', () => {
       expect(field('stylist')).not.toBeNull();
       expect(field('stylist').tagName).toEqual('SELECT');
     });
+    it('renders a label for the input field', () => {
+      render(<AppointmentForm />);
+      expect(labelFor('stylist')).not.toBeNull();
+    });
+    it('initially has a blank value chosen', () => {
+      render(<AppointmentForm />);
+      const firstNode = field('stylist').childNodes[0];
+      expect(firstNode.value).toEqual('');
+      expect(firstNode.selected).toBeTruthy();
+    });
+    it('lists all stylists', () => {
+      const selectableStylists = [
+        'Jon',
+        'Jane'];
+      render(
+        <AppointmentForm
+          selectableStylists={selectableStylists}
+        />
+      );
+      const optionNodes = Array.from(
+        field('stylist').childNodes
+      );
+      const renderedStylists = optionNodes.map((node) => node.textContent);
+      expect(renderedStylists).toEqual(
+        expect.arrayContaining(selectableStylists)
+      );
+    });
   });
+
   describe('time slot table', () => {
     const timeSlotTable = () => container.querySelector('table#time-slots');
 
