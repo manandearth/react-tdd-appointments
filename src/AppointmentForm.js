@@ -108,12 +108,20 @@ export const AppointmentForm = ({
   availableTimeSlots,
   startsAt,
   selectableStylists,
+  stylist,
 }) => {
   const dates = weeklyDateValues(today);
   const [appointment, setAppointment] = useState({
+    stylist,
     service,
     startsAt,
   });
+  const handleStylistChange = ({ target: { value } }) => setAppointment(
+    {
+      ...appointment,
+      stylist: value,
+    }
+  );
   const handleServiceChange = ({ target: { value } }) => setAppointment(
     {
       ...appointment,
@@ -144,7 +152,9 @@ export const AppointmentForm = ({
       <label htmlFor="stylist">Stylist</label>
       <select
         name="stylist"
-        value={appointment.stylists}
+        value={appointment.stylist}
+        id="stylist"
+        onChange={handleStylistChange}
       >
         <option />
         {selectableStylists.map((s) => (<option key={s}>{s}</option>))}

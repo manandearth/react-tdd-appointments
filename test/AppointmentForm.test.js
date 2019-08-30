@@ -130,6 +130,15 @@ describe('AppointmentForm', () => {
         expect.arrayContaining(selectableStylists)
       );
     });
+    it('preselects the existing value', () => {
+      const stylists = ['Jon', 'Jeff'];
+      render(<AppointmentForm
+        selectableStylists={stylists}
+        stylist="Jon"
+      />);
+      const option = findOption(field('stylist'), 'Jon');
+      expect(option.selected).toBeTruthy();
+    });
   });
 
   describe('time slot table', () => {
