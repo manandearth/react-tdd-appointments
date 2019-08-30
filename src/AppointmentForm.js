@@ -144,7 +144,6 @@ export const AppointmentForm = ({
         value={appointment.service}
         id="service"
         onChange={handleServiceChange}
-        readOnly
       >
         <option />
         {selectableServices.map((s) => (<option key={s}>{s}</option>))}

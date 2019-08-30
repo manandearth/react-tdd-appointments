@@ -139,6 +139,27 @@ describe('AppointmentForm', () => {
       const option = findOption(field('stylist'), 'Jon');
       expect(option.selected).toBeTruthy();
     });
+    it('assigns an id that matches the label id', () => {
+      render(<AppointmentForm />);
+      expect(field('stylist').id).toEqual('stylist');
+    });
+    it('saves existing value when submitted', async () => {
+      expect.hasAssertions();
+      render(<AppointmentForm
+        stylist="Pepe"
+        onSubmit={(props) => expect(props.stylist).toEqual('Pepe')}
+      />);
+      await ReactTestUtils.Simulate.submit(form('appointment'));
+    });
+    it('saves a new value when submitted', async () => {
+      expect.hasAssertions();
+      render(<AppointmentForm
+        stylist="Jon"
+        onSubmit={(props) => expect(props.stylist).toEqual('Geoff')}
+      />);
+      await ReactTestUtils.Simulate.change(field('stylist'), { target: { value: 'Geoff' } });
+      await ReactTestUtils.Simulate.submit(form('appointment'));
+    });
   });
 
   describe('time slot table', () => {
