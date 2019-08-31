@@ -333,7 +333,28 @@ describe('AppointmentForm', () => {
       expect(startsAtField(0).checked).toEqual(false);
     });
     it('renders an update timeslot table by stylist', () => {
+      const today = new Date();
+      const availableTimeSlots = {
+        Pepe: [
+          { startsAt: today.setHours(10, 0, 0, 0) },
+          { startsAt: today.setHours(10, 30, 0, 0) },
 
+        ],
+        Paco: [
+          { startsAt: today.setHours(9, 0, 0, 0) },
+          { startsAt: today.setHours(9, 30, 0, 0) },
+
+        ],
+      };
+      const stylist = 'Pepe';
+      render(<AppointmentForm
+        availableTimeSlots={availableTimeSlots}
+        stylist={stylist}
+        today={today}
+      />);
+      const timesOfDay = timeSlotTable().querySelectorAll('input');
+      const firstAvailable = Array.from(timesOfDay);
+      expect(firstAvailable[0].value).toEqual(today.setHours(10, 0, 0, 0).toString());
     });
   });
 });
