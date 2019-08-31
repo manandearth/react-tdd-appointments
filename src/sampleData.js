@@ -53,6 +53,12 @@ const pickMany = (items, number) => Array(number)
   .fill(1)
   .map(() => items.pickRandom());
 
+export const sampleStylists = [
+  { name: 'Jon', services: ['Cut', 'Beard trim', 'Cut & Beard trim'] },
+  { name: 'Pepe', services: ['Cut', 'Beard trim', 'Cut & Beard trim'] },
+  { name: 'Paul', services: ['Cut', 'Extensions', 'Cut & Color', 'Blow-dry'] },
+  { name: 'Sara', services: ['Cut', 'Beard trim', 'Cut & Beard trim', 'Extensions', 'Blow-dry', 'Cut & color'] }];
+
 const buildTimeSlots = () => {
   const today = new Date();
   const startTime = today.setHours(9, 0, 0, 0);
@@ -68,7 +74,11 @@ const buildTimeSlots = () => {
   return [].concat(...times);
 };
 
-export const sampleAvailableTimeSlots = pickMany(
+
+const randomPicks = (n) => pickMany(
   buildTimeSlots(),
-  50
+  n
 );
+export const sampleAvailableTimeSlots = sampleStylists.reduce((obj, item) => {
+  obj[item.name] = randomPicks(50); return obj;
+}, {});
