@@ -3,6 +3,24 @@ import ReactTestUtils from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
 
+// two spies (single and multi args)
+const singleArgumentSpy = () => {
+  let receivedArgument;
+  return {
+    fn: (arg) => (receivedArgument = arg),
+    receivedArgument: () => receivedArgument,
+  };
+};
+
+const spy = () => {
+  let receivedArguments;
+  return {
+    fn: (...args) => (receivedArguments = args),
+    receivedArguments: () => receivedArguments,
+    receivedArgument: (n) => receivedArguments[n],
+  };
+};
+
 describe('CustomerForm', () => {
   let render; let
     container;
@@ -42,13 +60,16 @@ describe('CustomerForm', () => {
     render(<CustomerForm />);
     expect(field(fieldName).id).toEqual(fieldName);
   });
-  const itSavesWhenSubmitted = (fieldName, value) => it('saves when submitted', async () => {
-    expect.hasAssertions();
+  const itSubmitsExistingValue = (fieldName) => it('saves existing value when submitted', async () => {
+    const submitSpy = singleArgumentSpy();
+
     render(<CustomerForm
-      {...{ [fieldName]: value }}
-      onSubmit={(props) => expect(props[fieldName]).toEqual(value)}
+      {...{ [fieldName]: 'value' }}
+      onSubmit={submitSpy.fn}
     />);
     await ReactTestUtils.Simulate.submit(form('customer'));
+    expect(submitSpy.receivedArgument()).toBeDefined();
+    expect(submitSpy.receivedArgument()[fieldName]).toEqual('value');
   });
   const itSavesNewWhenSubmitted = (fieldName, newValue) => it('saves new when submitted', async () => {
     expect.hasAssertions();
@@ -67,7 +88,7 @@ describe('CustomerForm', () => {
     itIncludesTheExistingValue('firstName');
     itRendersALabel('firstName');
     itAssignsAnIdThatMatchesTheLabelId('firstName');
-    itSavesWhenSubmitted('firstName', 'Ashley');
+    itSubmitsExistingValue('firstName', 'Ashley');
     itSavesNewWhenSubmitted('firstName', 'aha!');
   });
 
@@ -77,7 +98,7 @@ describe('CustomerForm', () => {
     itIncludesTheExistingValue('lastName');
     itRendersALabel('lastName');
     itAssignsAnIdThatMatchesTheLabelId('lastName');
-    itSavesWhenSubmitted('lastName', 'Franklin');
+    itSubmitsExistingValue('lastName', 'Franklin');
     itSavesNewWhenSubmitted('lastName', 'aha!');
   });
 
@@ -87,7 +108,7 @@ describe('CustomerForm', () => {
     itIncludesTheExistingValue('phoneNumber');
     itRendersALabel('phoneNumber');
     itAssignsAnIdThatMatchesTheLabelId('phoneNumber');
-    itSavesWhenSubmitted('phoneNumber', '12345678');
+    itSubmitsExistingValue('phoneNumber', '12345678');
     itSavesNewWhenSubmitted('phoneNumber', '09876543');
   });
 
