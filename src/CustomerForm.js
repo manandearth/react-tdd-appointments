@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 
 export const CustomerForm = ({
-  firstName, lastName, phoneNumber, onSubmit,
+  firstName, lastName, phoneNumber, onSubmit, fetch,
 }) => {
   const [customer, setCustomer] = useState({ firstName, lastName, phoneNumber });
   const handleChangeText = ({ target }, field) => setCustomer((customer) => ({
     ...customer,
     [field]: target.value,
   }));
+  const handleSubmit = () => {
+    onSubmit(customer);
+    fetch('/customers', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
 
   return (
-    <form id="customer" onSubmit={() => onSubmit(customer)}>
+    <form id="customer" onSubmit={handleSubmit}>
       <label htmlFor="firstName">First Name</label>
       <input
         type="text"
@@ -39,4 +47,8 @@ export const CustomerForm = ({
       <input type="submit" value="Add" />
     </form>
   );
+};
+
+CustomerForm.defaultProps = {
+  fetch: async () => {},
 };

@@ -130,4 +130,17 @@ describe('CustomerForm', () => {
     const SubmitButton = container.querySelector('input[type="submit"]');
     expect(SubmitButton).not.toBeNull();
   });
+  it('calls fetch with the right properties when submitting data', async () => {
+    const fetchSpy = spy();
+    render(
+      <CustomerForm fetch={fetchSpy.fn} onSubmit={() => {}} />
+    );
+    ReactTestUtils.Simulate.submit(form('customer'));
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy.receivedArgument(0)).toEqual('/customers');
+    const fetchOpts = fetchSpy.receivedArgument(1);
+    expect(fetchOpts.method).toEqual('POST');
+    expect(fetchOpts.credentials).toEqual('same-origin');
+    expect(fetchOpts.headers).toEqual({ 'Content-Type': 'application/json' });
+  });
 });
