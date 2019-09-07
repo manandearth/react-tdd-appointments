@@ -7,9 +7,10 @@ import { AppointmentForm } from './AppointmentForm';
 
 ReactDOM.render(
   // <AppointmentsDayView appointments={sampleAppointments} />,
-  <AppointmentForm
-    availableTimeSlots={sampleAvailableTimeSlots}
-    selectableStylists={sampleStylists}
-  />,
+  // <AppointmentForm
+  //   availableTimeSlots={sampleAvailableTimeSlots}
+  //   selectableStylists={sampleStylists}
+  // />,
+  <CustomerForm />,
   document.getElementById('root')
 );
