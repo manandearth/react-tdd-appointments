@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactTestUtils from 'react-dom/test-utils';
+import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
 
@@ -26,6 +26,11 @@ const spy = () => {
   };
 };
 
+const fetchResponseOk = (body) => Promise.resolve({
+  ok: true,
+  json: () => Promise.resolve(body),
+});
+
 expect.extend({
   toHaveBeenCalled(received) {
     if (received.receivedArguments(0) === undefined) {
@@ -49,6 +54,7 @@ describe('CustomerForm', () => {
     ({ render, container } = createContainer());
     fetchSpy = spy();
     window.fetch = fetchSpy.fn;
+    fetchSpy.stubReturnValue(fetchResponseOk({}));
   });
   // It is important to reset any global variables that are replaced with spies, this is what this afterEach block does:
   afterEach(() => {
@@ -153,5 +159,16 @@ describe('CustomerForm', () => {
     expect(fetchOpts.method).toEqual('POST');
     expect(fetchOpts.credentials).toEqual('same-origin');
     expect(fetchOpts.headers).toEqual({ 'Content-Type': 'application/json' });
+  });
+  it('notifies onSave when form is submitted', async () => {
+    const customer = { id: 123 };
+    fetchSpy.stubReturnValue(fetchResponseOk(customer));
+    const saveSpy = spy();
+    render(<CustomerForm onSave={saveSpy.fn} />);
+    await act(async () => {
+      ReactTestUtils.Simulate.submit(form('customer'));
+    });
+    expect(saveSpy).toHaveBeenCalled();
+    expect(saveSpy.receivedArgument(0)).toEqual(customer);
   });
 });
