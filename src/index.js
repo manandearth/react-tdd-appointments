@@ -4,6 +4,7 @@ import { AppointmentsDayView } from './AppointmentsDayView';
 import { CustomerForm } from './CustomerForm';
 import { sampleAvailableTimeSlots, sampleStylists } from './sampleData';
 import { AppointmentForm } from './AppointmentForm';
+import 'whatwg-fetch';
 
 ReactDOM.render(
   // <AppointmentsDayView appointments={sampleAppointments} />,
