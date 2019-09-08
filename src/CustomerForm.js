@@ -15,8 +15,10 @@ export const CustomerForm = ({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(customer),
     });
-    const customerWithId = await result.json();
-    onSave(customerWithId);
+    if (result && result.ok) {
+      const customerWithId = await result.json();
+      onSave(customerWithId);
+    }
   };
 
   return (
