@@ -37,8 +37,17 @@ describe('CustomerForm', () => {
   let render; let
     container;
 
+  const originalFetch = window.fetch;
+  let fetchSpy;
+
   beforeEach(() => {
     ({ render, container } = createContainer());
+    fetchSpy = spy();
+    window.fetch = fetchSpy.fn;
+  });
+  // It is important to reset any global variables that are replaced with spies, this is what this afterEach block does:
+  afterEach(() => {
+    window.fetch = originalFetch;
   });
   const form = (id) => container.querySelector(`form[id="${id}"]`);
 
@@ -73,8 +82,6 @@ describe('CustomerForm', () => {
     expect(field(fieldName).id).toEqual(fieldName);
   });
   const itSubmitsExistingValue = (fieldName) => it('saves existing value when submitted', async () => {
-    const fetchSpy = spy();
-
     render(<CustomerForm
       {...{ [fieldName]: 'value' }}
       fetch={fetchSpy.fn}
@@ -84,7 +91,6 @@ describe('CustomerForm', () => {
     expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('value');
   });
   const itSavesNewWhenSubmitted = (fieldName, newValue) => it('saves new when submitted', async () => {
-    const fetchSpy = spy();
     render(<CustomerForm
       {...{ [fieldName]: 'existing value' }}
       fetch={fetchSpy.fn}
@@ -132,7 +138,6 @@ describe('CustomerForm', () => {
     expect(SubmitButton).not.toBeNull();
   });
   it('calls fetch with the right properties when submitting data', async () => {
-    const fetchSpy = spy();
     render(
       <CustomerForm fetch={fetchSpy.fn} onSubmit={() => {}} />
     );

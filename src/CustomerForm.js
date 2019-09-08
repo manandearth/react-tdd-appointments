@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export const CustomerForm = ({
-  firstName, lastName, phoneNumber, fetch,
+  firstName, lastName, phoneNumber,
 }) => {
   const [customer, setCustomer] = useState({ firstName, lastName, phoneNumber });
   const handleChangeText = ({ target }, field) => setCustomer((customer) => ({
@@ -9,7 +9,7 @@ export const CustomerForm = ({
     [field]: target.value,
   }));
   const handleSubmit = () => {
-    fetch('/customers', {
+    window.fetch('/customers', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
