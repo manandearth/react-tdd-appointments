@@ -2,38 +2,7 @@ import React from 'react';
 import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
-
-// two spies (single and multi args)
-const singleArgumentSpy = () => {
-  let receivedArgument;
-  return {
-    fn: (arg) => (receivedArgument = arg),
-    receivedArgument: () => receivedArgument,
-  };
-};
-
-const spy = () => {
-  let receivedArguments;
-  let returnValue;
-  return {
-    fn: (...args) => {
-      receivedArguments = args;
-      return returnValue;
-    },
-    mockReturnValue: (value) => returnValue = value,
-    receivedArguments: () => receivedArguments,
-    receivedArgument: (n) => receivedArguments[n],
-  };
-};
-
-const fetchResponseOk = (body) => Promise.resolve({
-  ok: true,
-  json: () => Promise.resolve(body),
-});
-
-const fetchResponseError = () => {
-  Promise.resolve({ ok: false });
-};
+import { fetchResponseOk, fetchResponseError } from './spyHelpers.js';
 
 describe('CustomerForm', () => {
   let render; let
