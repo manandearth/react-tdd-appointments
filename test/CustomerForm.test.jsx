@@ -6,11 +6,16 @@ import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelp
 import 'whatwg-fetch';
 
 describe('CustomerForm', () => {
-  let render; let
-    container;
-
+  let render;
+  let container;
+  let field;
+  let form;
+  let labelFor;
+  let element;
   beforeEach(() => {
-    ({ render, container } = createContainer());
+    ({
+      render, container, form, field, labelFor, element,
+    } = createContainer());
     window.fetch = window.fetch;
     jest
       .spyOn(window, 'fetch')
@@ -20,7 +25,7 @@ describe('CustomerForm', () => {
   afterEach(() => {
     window.fetch.mockRestore();
   });
-  const form = (id) => container.querySelector(`form[id="${id}"]`);
+  // const form = (id) => element(`form[id="${id}"]`);
 
   const expectToBeInputFieldOfTypeText = (formElement) => {
 	  expect(formElement).not.toBeNull();
@@ -33,7 +38,7 @@ describe('CustomerForm', () => {
     expect(form('customer')).not.toBeNull();
   });
 
-  const field = (formId, name) => form(formId).elements[name];
+  // const field = (formId, name) => form(formId).elements[name];
 
   const itRendersAsATextBox = (fieldName) => it('renders as a test box', () => {
     render(<CustomerForm />);
@@ -43,7 +48,7 @@ describe('CustomerForm', () => {
     render(<CustomerForm {...{ [fieldName]: 'value' }} />);
     expect(field('customer', fieldName).value).toEqual('value');
   });
-  const labelFor = (formElement) => container.querySelector(`label[for="${formElement}"]`);
+  // const labelFor = (formElement) => element(`label[for="${formElement}"]`);
   const itRendersALabel = (fieldName) => it('renders a label', () => {
     render(<CustomerForm />);
     expect(labelFor(fieldName)).not.toBeNull();
@@ -102,7 +107,7 @@ describe('CustomerForm', () => {
 
   it('has a submit button', () => {
     render(<CustomerForm />);
-    const SubmitButton = container.querySelector('input[type="submit"]');
+    const SubmitButton = element('input[type="submit"]');
     expect(SubmitButton).not.toBeNull();
   });
   it('calls fetch with the right properties when submitting data', async () => {
@@ -154,7 +159,7 @@ describe('CustomerForm', () => {
     await act(async () => {
       ReactTestUtils.Simulate.submit(form('customer'));
     });
-    const errorElement = container.querySelector('.error');
+    const errorElement = element('.error');
     expect(errorElement).not.toBeNull();
     expect(errorElement.textContent).toMatch('error occured');
   });
