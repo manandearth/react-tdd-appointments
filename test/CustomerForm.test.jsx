@@ -2,13 +2,11 @@ import React from 'react';
 import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
-import { fetchResponseOk, fetchResponseError } from './spyHelpers.js';
+import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers.js';
 
 describe('CustomerForm', () => {
   let render; let
     container;
-
-  const fetchRequestBody = () => JSON.parse(fetchSpy.mock.calls[0][1].body);
 
   const originalFetch = window.fetch;
   let fetchSpy;
@@ -60,7 +58,7 @@ describe('CustomerForm', () => {
       fetch={fetchSpy.fn}
     />);
     ReactTestUtils.Simulate.submit(form('customer'));
-    expect(fetchRequestBody()).toMatchObject({ [fieldName]: 'value' });
+    expect(fetchRequestBody(fetchSpy)).toMatchObject({ [fieldName]: 'value' });
   });
   const itSavesNewWhenSubmitted = (fieldName, newValue) => it('saves new when submitted', async () => {
     render(<CustomerForm
@@ -70,7 +68,7 @@ describe('CustomerForm', () => {
       target: { value: newValue },
     });
     ReactTestUtils.Simulate.submit(form('customer'));
-    expect(fetchRequestBody()).toMatchObject({ [fieldName]: newValue });
+    expect(fetchRequestBody(fetchSpy)).toMatchObject({ [fieldName]: newValue });
   });
 
   describe('first name field', () => {
