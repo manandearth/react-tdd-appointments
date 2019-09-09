@@ -3,22 +3,22 @@ import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
 import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers.js';
+import 'whatwg-fetch';
 
 describe('CustomerForm', () => {
   let render; let
     container;
 
-  const originalFetch = window.fetch;
-  let fetchSpy;
-
   beforeEach(() => {
     ({ render, container } = createContainer());
-    fetchSpy = jest.fn(() => fetchResponseOk({}));
-    window.fetch = fetchSpy;
+    window.fetch = window.fetch;
+    jest
+      .spyOn(window, 'fetch')
+      .mockReturnValue(fetchResponseOk({}));
   });
   // It is important to reset any global variables that are replaced with spies, this is what this afterEach block does:
   afterEach(() => {
-    window.fetch = originalFetch;
+    window.fetch.mockRestore();
   });
   const form = (id) => container.querySelector(`form[id="${id}"]`);
 
@@ -55,10 +55,10 @@ describe('CustomerForm', () => {
   const itSubmitsExistingValue = (fieldName) => it('saves existing value when submitted', async () => {
     render(<CustomerForm
       {...{ [fieldName]: 'value' }}
-      fetch={fetchSpy.fn}
+      fetch={window.fetch.fn}
     />);
     ReactTestUtils.Simulate.submit(form('customer'));
-    expect(fetchRequestBody(fetchSpy)).toMatchObject({ [fieldName]: 'value' });
+    expect(fetchRequestBody(window.fetch)).toMatchObject({ [fieldName]: 'value' });
   });
   const itSavesNewWhenSubmitted = (fieldName, newValue) => it('saves new when submitted', async () => {
     render(<CustomerForm
@@ -68,7 +68,7 @@ describe('CustomerForm', () => {
       target: { value: newValue },
     });
     ReactTestUtils.Simulate.submit(form('customer'));
-    expect(fetchRequestBody(fetchSpy)).toMatchObject({ [fieldName]: newValue });
+    expect(fetchRequestBody(window.fetch)).toMatchObject({ [fieldName]: newValue });
   });
 
   describe('first name field', () => {
@@ -110,7 +110,7 @@ describe('CustomerForm', () => {
       <CustomerForm />
     );
     ReactTestUtils.Simulate.submit(form('customer'));
-    expect(fetchSpy).toHaveBeenCalledWith(
+    expect(window.fetch).toHaveBeenCalledWith(
       '/customers',
       expect.objectContaining({
         method: 'POST',
@@ -121,7 +121,7 @@ describe('CustomerForm', () => {
   });
   it('notifies onSave when form is submitted', async () => {
     const customer = { id: 123 };
-    fetchSpy.mockReturnValue(fetchResponseOk(customer));
+    window.fetch.mockReturnValue(fetchResponseOk(customer));
     const saveSpy = jest.fn();
     render(<CustomerForm onSave={saveSpy} />);
     await act(async () => {
@@ -130,7 +130,7 @@ describe('CustomerForm', () => {
     expect(saveSpy).toHaveBeenCalledWith(customer);
   });
   it('does not notify onSave if the POST request returns an error', async () => {
-    fetchSpy.mockReturnValue(fetchResponseError());
+    window.fetch.mockReturnValue(fetchResponseError());
     const saveSpy = jest.fn();
     render(<CustomerForm onSave={saveSpy} />);
     await act(async () => {
@@ -149,7 +149,7 @@ describe('CustomerForm', () => {
     expect(preventDefaultSpy).toHaveBeenCalled();
   });
   it('renders error message when fetch call fails', async () => {
-    fetchSpy.mockReturnValue(Promise.resolve({ ok: false }));
+    window.fetch.mockReturnValue(Promise.resolve({ ok: false }));
     render(<CustomerForm />);
     await act(async () => {
       ReactTestUtils.Simulate.submit(form('customer'));
