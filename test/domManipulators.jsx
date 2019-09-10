@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom';
+import ReactTestUtils, { act } from 'react-dom/test-utils';
 
 export const createContainer = () => {
   const container = document.createElement('div');
@@ -6,6 +7,9 @@ export const createContainer = () => {
   const field = (formId, name) => form(formId).elements[name];
   const labelFor = (formElement) => container.querySelector(`label[for="${formElement}"]`);
   const element = (selector) => container.querySelector(selector);
+  const simulateEvent = (eventName) => (element, eventData) => ReactTestUtils.Simulate[eventName](element, eventData);
+
+  const simulateEventAndWait = (eventName) => async (element, eventData) => await act(async () => ReactTestUtils.Simulate[eventName](element, eventData));
   return {
     element,
     render: (component) => ReactDOM.render(component, container),
@@ -13,5 +17,8 @@ export const createContainer = () => {
     form,
     field,
     labelFor,
+    click: simulateEvent('click'),
+    change: simulateEvent('change'),
+    submit: simulateEventAndWait('submit'),
   };
 };
