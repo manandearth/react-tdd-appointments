@@ -149,11 +149,14 @@ describe('CustomerForm', () => {
     expect(preventDefaultSpy).toHaveBeenCalled();
   });
   it('renders error message when fetch call fails', async () => {
-    window.fetch.mockReturnValue(Promise.resolve({ ok: false }));
+    window.fetch.mockReturnValue(fetchResponseError());
     render(<CustomerForm />);
     await submit(form('customer'));
     const errorElement = element('.error');
     expect(errorElement).not.toBeNull();
     expect(errorElement.textContent).toMatch('error occured');
+  });
+  it('clears the error state when the form succeeds', async () => {
+    window.fetch.mockReturnValue(fetchResponseOk());
   });
 });
