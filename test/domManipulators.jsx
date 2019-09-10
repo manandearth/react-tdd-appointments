@@ -1,6 +1,11 @@
 import ReactDOM from 'react-dom';
 import ReactTestUtils, { act } from 'react-dom/test-utils';
 
+// helper for defining a reusable object to be used in a test
+export const withEvent = (name, value) => ({ target: { name, value } }
+);
+
+// helper that contains reusable elements:
 export const createContainer = () => {
   const container = document.createElement('div');
   const form = (id) => container.querySelector(`form[id="${id}"]`);

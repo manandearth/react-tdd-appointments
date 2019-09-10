@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactTestUtils from 'react-dom/test-utils';
-import { createContainer } from './domManipulators';
+import { createContainer, withEvent } from './domManipulators';
 import { CustomerForm } from '../src/CustomerForm';
 import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers.js';
 import 'whatwg-fetch';
@@ -71,9 +71,8 @@ describe('CustomerForm', () => {
     render(<CustomerForm
       {...{ [fieldName]: 'existing value' }}
     />);
-    change(field('customer', fieldName), {
-      target: { value: newValue },
-    });
+    change(field('customer', fieldName),
+      withEvent(fieldName, newValue));
     submit(form('customer'));
     expect(fetchRequestBody(window.fetch)).toMatchObject({ [fieldName]: newValue });
   });
