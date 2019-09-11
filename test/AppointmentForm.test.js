@@ -7,11 +7,16 @@ describe('AppointmentForm', () => {
   let render;
   let container;
   let field;
+  let form;
+  let labelFor;
+  let change;
+  let submit;
 
   beforeEach(() => {
-    ({ render, container, field } = createContainer());
+    ({
+      render, container, field, form, labelFor, change, submit,
+    } = createContainer());
   });
-  const form = (id) => container.querySelector(`form[id="${id}"]`);
   const formId = 'appointment';
 
   it('renders a form', () => {
@@ -20,14 +25,12 @@ describe('AppointmentForm', () => {
   });
 
   describe('service field', () => {
-    // const field = (name) => form('appointment').elements[name];
     const findOption = (dropdownNode, textContent) => {
       const options = Array.from(dropdownNode.childNodes);
       return options.find(
         (option) => option.textContent === textContent
       );
     };
-    const labelFor = (formElement) => container.querySelector(`label[for="${formElement}"]`);
     const fieldName = 'service';
 
     it('renders as a select box', () => {
@@ -97,20 +100,18 @@ describe('AppointmentForm', () => {
         service="Blow-dry"
         onSubmit={(props) => expect(props.service).toEqual('Beard trim')}
       />);
-      await ReactTestUtils.Simulate.change(field(formId, fieldName), { target: { value: 'Beard trim' } });
-      await ReactTestUtils.Simulate.submit(form('appointment'));
+      change(field(formId, fieldName), { target: { value: 'Beard trim' } });
+      submit(form('appointment'));
     });
   });
 
   describe('stylist field', () => {
-    // const field = (name) => form('appointment').elements[name];
     const findOption = (dropdownNode, textContent) => {
       const options = Array.from(dropdownNode.childNodes);
       return options.find(
         (option) => option.textContent === textContent
       );
     };
-    const labelFor = (formElement) => container.querySelector(`label[for="${formElement}"]`);
     const fieldName = 'stylist';
 
     const selectableStylists = [
@@ -187,8 +188,8 @@ describe('AppointmentForm', () => {
         stylist="Pepe"
         onSubmit={(props) => expect(props.stylist).toEqual('Sara')}
       />);
-      await ReactTestUtils.Simulate.change(field(formId, fieldName), { target: { value: 'Sara' } });
-      await ReactTestUtils.Simulate.submit(form('appointment'));
+      change(field(formId, fieldName), { target: { value: 'Sara' } });
+      submit(form('appointment'));
     });
 
     it('filters the services list according to stylist\'s services', () => {
@@ -355,7 +356,7 @@ describe('AppointmentForm', () => {
           stylist={stylist}
         />
       );
-      ReactTestUtils.Simulate.change(startsAtField(1), {
+      change(startsAtField(1), {
         target: {
           value: availableTimeSlots[stylist][1].startsAt.toString(),
           name: 'startsAt',
