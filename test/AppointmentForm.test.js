@@ -21,6 +21,19 @@ describe('AppointmentForm', () => {
     };
   };
 
+  expect.extend({
+    toHaveBeenCalled(received) {
+      if (received.receivedArguments() === undefined) {
+        return {
+          pass: false,
+          message: () => 'Spy was not called',
+        };
+      }
+      return { pass: true, message: 'Spy was called.' };
+    },
+
+  });
+
   beforeEach(() => {
     ({
       render, container, field, form, labelFor, change, submit,
@@ -93,7 +106,7 @@ describe('AppointmentForm', () => {
       expect(field(formId, fieldName).id).toEqual(fieldName);
     });
 
-    it.only('saves existing value when submitted', async () => {
+    it('saves existing value when submitted', async () => {
       const submitSpy = spy();
 
       render(<AppointmentForm
@@ -101,7 +114,7 @@ describe('AppointmentForm', () => {
         onSubmit={submitSpy.fn}
       />);
       submit(form('appointment'));
-      expect(submitSpy.receivedArguments()).toBeDefined();
+      expect(submitSpy).toHaveBeenCalled();
       expect(submitSpy.receivedArgument(0)[fieldName]).toEqual('Blow-dry');
     });
 
