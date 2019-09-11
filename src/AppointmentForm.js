@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import 'whatwg-fetch';
 
 const timeIncrement = (numTimes, startTime, increment) => Array(numTimes)
   .fill([startTime])
@@ -111,6 +112,7 @@ export const AppointmentForm = ({
   startsAt,
   selectableStylists,
   stylist,
+  fetch,
 }) => {
   const dates = weeklyDateValues(today);
   const [appointment, setAppointment] = useState({
@@ -143,8 +145,17 @@ export const AppointmentForm = ({
     return selectedStylist.services;
   };
 
+  const handleSubmit = () => {
+    onSubmit(appointment);
+    fetch('/appointments', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  };
+
   return (
-    <form id="appointment" onSubmit={() => onSubmit(appointment)}>
+    <form id="appointment" onSubmit={handleSubmit}>
 
       <label htmlFor="stylist">Stylist</label>
       <select
@@ -184,6 +195,7 @@ export const AppointmentForm = ({
   );
 };
 AppointmentForm.defaultProps = {
+  fetch: async () => {},
   availableTimeSlots: {},
   today: new Date(),
   salonOpensAt: 9,

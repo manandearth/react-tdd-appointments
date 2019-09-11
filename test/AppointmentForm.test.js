@@ -46,6 +46,18 @@ describe('AppointmentForm', () => {
     expect(form('appointment')).not.toBeNull();
   });
 
+  it('calls the fetch on submit and returns a 201', () => {
+    const fetchSpy = spy();
+    render(<AppointmentForm fetch={fetchSpy.fn} onSubmit={() => {}} />);
+    submit(form('appointment'));
+    expect(fetchSpy).toHaveBeenCalled();
+    expect(fetchSpy.receivedArgument(0)).toEqual('/appointments');
+    const fetchOpts = fetchSpy.receivedArgument(1);
+    expect(fetchOpts.method).toEqual('POST');
+    expect(fetchOpts.credentials).toEqual('same-origin');
+    expect(fetchOpts.headers).toEqual({ 'Content-Type': 'application/json' });
+  });
+
   describe('service field', () => {
     const findOption = (dropdownNode, textContent) => {
       const options = Array.from(dropdownNode.childNodes);
