@@ -40,8 +40,6 @@ describe('CustomerForm', () => {
     expect(form('customer')).not.toBeNull();
   });
 
-  // const field = (formId, name) => form(formId).elements[name];
-
   const itRendersAsATextBox = (fieldName) => it('renders as a test box', () => {
     render(<CustomerForm />);
     expectToBeInputFieldOfTypeText(field('customer', fieldName));
@@ -50,7 +48,6 @@ describe('CustomerForm', () => {
     render(<CustomerForm {...{ [fieldName]: 'value' }} />);
     expect(field('customer', fieldName).value).toEqual('value');
   });
-  // const labelFor = (formElement) => element(`label[for="${formElement}"]`);
   const itRendersALabel = (fieldName) => it('renders a label', () => {
     render(<CustomerForm />);
     expect(labelFor(fieldName)).not.toBeNull();
