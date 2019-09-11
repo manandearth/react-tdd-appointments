@@ -157,6 +157,11 @@ describe('CustomerForm', () => {
     expect(errorElement.textContent).toMatch('error occured');
   });
   it('clears the error state when the form succeeds', async () => {
+    window.fetch.mockReturnValueOnce(fetchResponseError());
     window.fetch.mockReturnValue(fetchResponseOk());
+    render(<CustomerForm />);
+    await submit(form('customer'));
+    await submit(form('customer'));
+    expect(element('.error')).toBeNull();
   });
 });

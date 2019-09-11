@@ -19,6 +19,7 @@ export const CustomerForm = ({
     });
     if (result && result.ok) {
       const customerWithId = await result.json();
+      setError(false);
       onSave(customerWithId);
     } else {
       setError(true);
