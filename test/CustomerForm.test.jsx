@@ -27,7 +27,6 @@ describe('CustomerForm', () => {
   afterEach(() => {
     window.fetch.mockRestore();
   });
-  // const form = (id) => element(`form[id="${id}"]`);
 
   const expectToBeInputFieldOfTypeText = (formElement) => {
 	  expect(formElement).not.toBeNull();

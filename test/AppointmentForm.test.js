@@ -12,6 +12,15 @@ describe('AppointmentForm', () => {
   let change;
   let submit;
 
+  const spy = () => {
+    let receivedArguments;
+    return {
+      fn: (...args) => (receivedArguments = args),
+      receivedArguments: () => receivedArguments,
+      receivedArgument: (n) => receivedArguments[n],
+    };
+  };
+
   beforeEach(() => {
     ({
       render, container, field, form, labelFor, change, submit,
@@ -84,14 +93,16 @@ describe('AppointmentForm', () => {
       expect(field(formId, fieldName).id).toEqual(fieldName);
     });
 
-    it('saves existing value when submitted', async () => {
-      expect.hasAssertions();
+    it.only('saves existing value when submitted', async () => {
+      const submitSpy = spy();
+
       render(<AppointmentForm
         service="Blow-dry"
-        onSubmit={(props) => expect(props.service).toEqual('Blow-dry')}
+        onSubmit={submitSpy.fn}
       />);
-
-      await ReactTestUtils.Simulate.submit(form('appointment'));
+      submit(form('appointment'));
+      expect(submitSpy.receivedArguments()).toBeDefined();
+      expect(submitSpy.receivedArgument(0)[fieldName]).toEqual('Blow-dry');
     });
 
     it('saves a new value when submitted', async () => {
@@ -362,7 +373,7 @@ describe('AppointmentForm', () => {
           name: 'startsAt',
         },
       });
-    	  ReactTestUtils.Simulate.submit(form('appointment'));
+    	  submit(form('appointment'));
       expect(startsAtField(0).checked).toEqual(false);
     });
 
