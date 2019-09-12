@@ -267,6 +267,18 @@ describe('AppointmentForm', () => {
     const startsAtField = (index) => container.querySelectorAll('input[name="startsAt"]') [
       index
     ];
+    const availableTimeSlots = {
+      Pepe: [
+        { startsAt: today.setHours(10, 0, 0, 0) },
+        { startsAt: today.setHours(10, 30, 0, 0) },
+
+      ],
+      Paco: [
+        { startsAt: today.setHours(9, 0, 0, 0) },
+        { startsAt: today.setHours(9, 30, 0, 0) },
+
+      ],
+    };
 
     it('renders a table for timeslots', () => {
       render(<AppointmentForm />);
@@ -302,22 +314,14 @@ describe('AppointmentForm', () => {
     });
 
     it('renders a radio button for each available time slot', () => {
-      const availableTimeSlots = {
-        Jon: [
-          { startsAt: today.setHours(9, 0, 0, 0) },
-          { startsAt: today.setHours(9, 30, 0, 0) },
-        ],
-        Pepe: [{ startsAt: today.setHours(9, 0, 0, 0) },
-          { startsAt: today.setHours(9, 30, 0, 0) }],
-      };
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}
         today={today}
         stylist="Pepe"
       />);
       const cells = timeSlotTable().querySelectorAll('td');
-      expect(cells[0].querySelector('input[type="radio"]')).not.toBeNull();
-      expect(cells[7].querySelector('input[type="radio"]')).not.toBeNull();
+      expect(cells[14].querySelector('input[type="radio"]')).not.toBeNull();
+      expect(cells[21].querySelector('input[type="radio"]')).not.toBeNull();
     });
 
     it('renders no radio buttons for unavailable time slots', () => {
@@ -327,12 +331,6 @@ describe('AppointmentForm', () => {
     });
 
     it('sets radio button value to the index of the corresponding appointment', () => {
-      const availableTimeSlots = {
-        Pepe: [
-          { startsAt: today.setHours(9, 0, 0, 0) },
-          { startsAt: today.setHours(9, 30, 0, 0) },
-        ],
-      };
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}
         today={today}
@@ -347,12 +345,6 @@ describe('AppointmentForm', () => {
     });
 
     it('preselects the existing value', () => {
-      const availableTimeSlots = {
-        Pepe: [
-          { startsAt: today.setHours(9, 0, 0, 0) },
-          { startsAt: today.setHours(9, 30, 0, 0) },
-        ],
-      };
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}
         today={today}
@@ -363,12 +355,6 @@ describe('AppointmentForm', () => {
     });
 
     it('saves existing value when submiting', async () => {
-      const availableTimeSlots = {
-        Pepe: [
-          { startsAt: today.setHours(9, 0, 0, 0) },
-          { startsAt: today.setHours(9, 30, 0, 0) },
-        ],
-      };
       const { startsAt } = availableTimeSlots[stylist][0];
       render(<AppointmentForm
         today={today}
@@ -383,12 +369,6 @@ describe('AppointmentForm', () => {
     });
 
     it('saves new value when submitted', () => {
-      const availableTimeSlots = {
-        Pepe: [
-          { startsAt: today.setHours(9, 0, 0, 0) },
-          { startsAt: today.setHours(9, 30, 0, 0) },
-        ],
-      };
       const { startsAt } = availableTimeSlots[stylist][0];
       render(
         <AppointmentForm
@@ -409,18 +389,6 @@ describe('AppointmentForm', () => {
     });
 
     it('notifies onSave when form is submitted', async () => {
-      const availableTimeSlots = {
-        Pepe: [
-          { startsAt: today.setHours(10, 0, 0, 0) },
-          { startsAt: today.setHours(10, 30, 0, 0) },
-
-        ],
-        Paco: [
-          { startsAt: today.setHours(9, 0, 0, 0) },
-          { startsAt: today.setHours(9, 30, 0, 0) },
-
-        ],
-      };
       fetchSpy.stubReturnValue(fetchResponseOk(availableTimeSlots));
       const saveSpy = spy();
       render(
@@ -438,21 +406,10 @@ describe('AppointmentForm', () => {
       expect(saveSpy).toHaveBeenCalled();
     });
 
+    it('does not notify onSave when the POST request returns an error', () => {
+    });
 
     it('renders an update timeslot table by stylist', () => {
-      const today = new Date();
-      const availableTimeSlots = {
-        Pepe: [
-          { startsAt: today.setHours(10, 0, 0, 0) },
-          { startsAt: today.setHours(10, 30, 0, 0) },
-
-        ],
-        Paco: [
-          { startsAt: today.setHours(9, 0, 0, 0) },
-          { startsAt: today.setHours(9, 30, 0, 0) },
-
-        ],
-      };
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}
         stylist={stylist}
