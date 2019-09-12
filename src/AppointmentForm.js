@@ -111,7 +111,7 @@ export const AppointmentForm = ({
   startsAt,
   selectableStylists,
   stylist,
-  fetch,
+  onSave,
 }) => {
   const dates = weeklyDateValues(today);
   const [appointment, setAppointment] = useState({
@@ -144,13 +144,15 @@ export const AppointmentForm = ({
     return selectedStylist.services;
   };
 
-  const handleSubmit = () => {
-    window.fetch('/appointments', {
+  const handleSubmit = async () => {
+    const result = await window.fetch('/appointments', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(appointment),
     });
+    const appointmentWithId = await result.json();
+    onSave(appointmentWithId);
   };
 
   return (
@@ -211,4 +213,5 @@ AppointmentForm.defaultProps = {
     { name: 'Pepe', services: ['Cut', 'Beard trim', 'Cut & Beard trim'] },
     { name: 'Paul', services: ['Cut', 'Extensions', 'Cut & Color', 'Blow-dry'] },
     { name: 'Sara', services: ['Cut', 'Beard trim', 'Cut & Beard trim', 'Extensions', 'Blow-dry', 'Cut & color'] }],
+  onSave: () => {},
 };

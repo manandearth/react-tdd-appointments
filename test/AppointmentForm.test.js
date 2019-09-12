@@ -1,7 +1,8 @@
 import React from 'react';
-import ReactTestUtils from 'react-dom/test-utils';
+import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { AppointmentForm } from '../src/AppointmentForm';
+import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers';
 
 describe('AppointmentForm', () => {
   let render;
@@ -14,10 +15,15 @@ describe('AppointmentForm', () => {
 
   const spy = () => {
     let receivedArguments;
+    let returnValue;
     return {
-      fn: (...args) => (receivedArguments = args),
+      fn: (...args) => {
+        receivedArguments = args;
+        return returnValue;
+      },
       receivedArguments: () => receivedArguments,
       receivedArgument: (n) => receivedArguments[n],
+      stubReturnValue: (value) => returnValue = value,
     };
   };
 
@@ -43,6 +49,7 @@ describe('AppointmentForm', () => {
     } = createContainer());
     fetchSpy = spy();
     window.fetch = fetchSpy.fn;
+    fetchSpy.stubReturnValue(fetchResponseOk({}));
   });
 
   afterEach = () => {
@@ -57,7 +64,7 @@ describe('AppointmentForm', () => {
   });
 
   it('calls the fetch on submit and returns a 201', () => {
-    render(<AppointmentForm onSubmit={() => {}} />);
+    render(<AppointmentForm />);
     submit(form('appointment'));
     expect(fetchSpy).toHaveBeenCalled();
     expect(fetchSpy.receivedArgument(0)).toEqual('/appointments');
@@ -67,7 +74,7 @@ describe('AppointmentForm', () => {
     expect(fetchOpts.headers).toEqual({ 'Content-Type': 'application/json' });
   });
 
-  describe('service field', () => {
+	  describe('service field', () => {
     const findOption = (dropdownNode, textContent) => {
       const options = Array.from(dropdownNode.childNodes);
       return options.find(
@@ -253,6 +260,8 @@ describe('AppointmentForm', () => {
   });
 
   describe('time slot table', () => {
+    const today = new Date(2018, 11, 1);
+    const stylist = 'Pepe';
     const timeSlotTable = () => container.querySelector('table#time-slots');
 
     const startsAtField = (index) => container.querySelectorAll('input[name="startsAt"]') [
@@ -282,7 +291,6 @@ describe('AppointmentForm', () => {
     });
 
     it('renders a week of available dates', () => {
-      const today = new Date(2018, 11, 1);
       render(<AppointmentForm today={today} />);
       const dates = timeSlotTable().querySelectorAll(
         'thead >* th:not(:first-child)'
@@ -294,7 +302,6 @@ describe('AppointmentForm', () => {
     });
 
     it('renders a radio button for each available time slot', () => {
-      const today = new Date();
       const availableTimeSlots = {
         Jon: [
           { startsAt: today.setHours(9, 0, 0, 0) },
@@ -320,14 +327,12 @@ describe('AppointmentForm', () => {
     });
 
     it('sets radio button value to the index of the corresponding appointment', () => {
-      const today = new Date();
       const availableTimeSlots = {
         Pepe: [
           { startsAt: today.setHours(9, 0, 0, 0) },
           { startsAt: today.setHours(9, 30, 0, 0) },
         ],
       };
-      const stylist = 'Pepe';
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}
         today={today}
@@ -342,14 +347,12 @@ describe('AppointmentForm', () => {
     });
 
     it('preselects the existing value', () => {
-      const today = new Date();
       const availableTimeSlots = {
         Pepe: [
           { startsAt: today.setHours(9, 0, 0, 0) },
           { startsAt: today.setHours(9, 30, 0, 0) },
         ],
       };
-      const stylist = 'Pepe';
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}
         today={today}
@@ -360,14 +363,12 @@ describe('AppointmentForm', () => {
     });
 
     it('saves existing value when submiting', async () => {
-      const today = new Date();
       const availableTimeSlots = {
         Pepe: [
           { startsAt: today.setHours(9, 0, 0, 0) },
           { startsAt: today.setHours(9, 30, 0, 0) },
         ],
       };
-      const stylist = 'Pepe';
       const { startsAt } = availableTimeSlots[stylist][0];
       render(<AppointmentForm
         today={today}
@@ -382,14 +383,12 @@ describe('AppointmentForm', () => {
     });
 
     it('saves new value when submitted', () => {
-      const today = new Date();
       const availableTimeSlots = {
         Pepe: [
           { startsAt: today.setHours(9, 0, 0, 0) },
           { startsAt: today.setHours(9, 30, 0, 0) },
         ],
       };
-      const stylist = 'Pepe';
       const { startsAt } = availableTimeSlots[stylist][0];
       render(
         <AppointmentForm
@@ -409,6 +408,37 @@ describe('AppointmentForm', () => {
       expect(startsAtField(0).checked).toEqual(false);
     });
 
+    it('notifies onSave when form is submitted', async () => {
+      const availableTimeSlots = {
+        Pepe: [
+          { startsAt: today.setHours(10, 0, 0, 0) },
+          { startsAt: today.setHours(10, 30, 0, 0) },
+
+        ],
+        Paco: [
+          { startsAt: today.setHours(9, 0, 0, 0) },
+          { startsAt: today.setHours(9, 30, 0, 0) },
+
+        ],
+      };
+      fetchSpy.stubReturnValue(fetchResponseOk(availableTimeSlots));
+      const saveSpy = spy();
+      render(
+        <AppointmentForm
+          availableTimeSlots={availableTimeSlots}
+          today={today}
+          // startsAt={startsAt}
+          stylist={stylist}
+          onSave={saveSpy.fn}
+        />
+      );
+      await act(async () => {
+        submit(form('appointment'));
+      });
+      expect(saveSpy).toHaveBeenCalled();
+    });
+
+
     it('renders an update timeslot table by stylist', () => {
       const today = new Date();
       const availableTimeSlots = {
@@ -423,7 +453,6 @@ describe('AppointmentForm', () => {
 
         ],
       };
-      const stylist = 'Pepe';
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}
         stylist={stylist}
