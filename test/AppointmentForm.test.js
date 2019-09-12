@@ -433,6 +433,15 @@ describe('AppointmentForm', () => {
       expect(preventDefaultSpy).toHaveBeenCalled();
     });
 
+    it('renders error message when fetch call fails', async () => {
+      fetchSpy.stubReturnValue(fetchResponseError());
+      render(<AppointmentForm />);
+      await submit(form('appointment'));
+      const errorElement = container.querySelector('.error');
+      expect(errorElement).not.toBeNull();
+      expect(errorElement.textContent).toMatch('error occured');
+    });
+
     it('renders an update timeslot table by stylist', () => {
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}

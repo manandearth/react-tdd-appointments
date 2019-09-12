@@ -119,6 +119,8 @@ export const AppointmentForm = ({
     service,
     startsAt,
   });
+  const [error, setError] = useState('false');
+
   const handleStylistChange = ({ target: { value } }) => setAppointment(
     {
       ...appointment,
@@ -155,12 +157,14 @@ export const AppointmentForm = ({
     if (result && result.ok) {
       const appointmentWithId = await result.json();
       onSave(appointmentWithId);
+    } else {
+      setError('true');
     }
   };
 
   return (
     <form id="appointment" onSubmit={handleSubmit}>
-
+      { error ? <Error /> : null}
       <label htmlFor="stylist">Stylist</label>
       <select
         name="stylist"
@@ -198,6 +202,9 @@ export const AppointmentForm = ({
     </form>
   );
 };
+
+const Error = () => <div className="error">an error occured</div>;
+
 AppointmentForm.defaultProps = {
   availableTimeSlots: {},
   today: new Date(),
