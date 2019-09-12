@@ -104,7 +104,6 @@ const TimeSlotTable = ({
 export const AppointmentForm = ({
   selectableServices,
   service,
-  onSubmit,
   salonOpensAt,
   salonClosesAt,
   today,
@@ -146,8 +145,7 @@ export const AppointmentForm = ({
   };
 
   const handleSubmit = () => {
-    onSubmit(appointment);
-    fetch('/appointments', {
+    window.fetch('/appointments', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
@@ -196,8 +194,6 @@ export const AppointmentForm = ({
   );
 };
 AppointmentForm.defaultProps = {
-  fetch: async () => {},
-  onSubmit: () => {},
   availableTimeSlots: {},
   today: new Date(),
   salonOpensAt: 9,

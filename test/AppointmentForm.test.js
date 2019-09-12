@@ -34,11 +34,21 @@ describe('AppointmentForm', () => {
 
   });
 
+  const originalFetch = window.fetch;
+  let fetchSpy;
+
   beforeEach(() => {
     ({
       render, container, field, form, labelFor, change, submit,
     } = createContainer());
+    fetchSpy = spy();
+    window.fetch = fetchSpy.fn;
   });
+
+  afterEach = () => {
+    window.fetch = originalFetch;
+  };
+
   const formId = 'appointment';
 
   it('renders a form', () => {
@@ -47,8 +57,7 @@ describe('AppointmentForm', () => {
   });
 
   it('calls the fetch on submit and returns a 201', () => {
-    const fetchSpy = spy();
-    render(<AppointmentForm fetch={fetchSpy.fn} onSubmit={() => {}} />);
+    render(<AppointmentForm onSubmit={() => {}} />);
     submit(form('appointment'));
     expect(fetchSpy).toHaveBeenCalled();
     expect(fetchSpy.receivedArgument(0)).toEqual('/appointments');
@@ -119,11 +128,8 @@ describe('AppointmentForm', () => {
     });
 
     it('saves existing value when submitted', async () => {
-      const fetchSpy = spy();
-
       render(<AppointmentForm
         service="Blow-dry"
-        fetch={fetchSpy.fn}
       />);
       submit(form('appointment'));
       const fetchOpts = fetchSpy.receivedArgument(1);
@@ -131,10 +137,8 @@ describe('AppointmentForm', () => {
     });
 
     it('saves a new value when submitted', async () => {
-      const fetchSpy = spy();
       render(<AppointmentForm
         service="Blow-dry"
-        fetch={fetchSpy.fn}
       />);
       change(field(formId, fieldName), { target: { value: 'Beard trim' } });
       submit(form('appointment'));
@@ -212,10 +216,8 @@ describe('AppointmentForm', () => {
     });
 
     it('saves existing value when submitted', async () => {
-      const fetchSpy = spy();
       render(<AppointmentForm
         stylist="Pepe"
-        fetch={fetchSpy.fn}
       />);
       submit(form('appointment'));
       const fetchOpts = fetchSpy.receivedArgument(1);
@@ -223,10 +225,8 @@ describe('AppointmentForm', () => {
     });
 
     it('saves a new value when submitted', async () => {
-      const fetchSpy = spy();
       render(<AppointmentForm
         stylist="Pepe"
-        fetch={fetchSpy.fn}
       />);
       change(field(formId, fieldName), { target: { value: 'Sara' } });
       submit(form('appointment'));
@@ -360,7 +360,6 @@ describe('AppointmentForm', () => {
     });
 
     it('saves existing value when submiting', async () => {
-      const fetchSpy = spy();
       const today = new Date();
       const availableTimeSlots = {
         Pepe: [
@@ -375,7 +374,6 @@ describe('AppointmentForm', () => {
         availableTimeSlots={availableTimeSlots}
         startsAt={startsAt}
         stylist={stylist}
-        fetch={fetchSpy.fn}
         onSubmit={() => {}}
       />);
       submit(form('appointment'));
@@ -384,7 +382,6 @@ describe('AppointmentForm', () => {
     });
 
     it('saves new value when submitted', () => {
-      const fetchSpy = spy();
       const today = new Date();
       const availableTimeSlots = {
         Pepe: [
@@ -399,7 +396,6 @@ describe('AppointmentForm', () => {
           availableTimeSlots={availableTimeSlots}
           today={today}
           startsAt={startsAt}
-          fetch={fetchSpy.fn}
           stylist={stylist}
         />
       );
