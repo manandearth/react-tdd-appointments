@@ -197,6 +197,7 @@ export const AppointmentForm = ({
 };
 AppointmentForm.defaultProps = {
   fetch: async () => {},
+  onSubmit: () => {},
   availableTimeSlots: {},
   today: new Date(),
   salonOpensAt: 9,

@@ -124,7 +124,6 @@ describe('AppointmentForm', () => {
       render(<AppointmentForm
         service="Blow-dry"
         fetch={fetchSpy.fn}
-        onSubmit={() => {}}
       />);
       submit(form('appointment'));
       const fetchOpts = fetchSpy.receivedArgument(1);
@@ -136,7 +135,6 @@ describe('AppointmentForm', () => {
       render(<AppointmentForm
         service="Blow-dry"
         fetch={fetchSpy.fn}
-        onSubmit={() => {}}
       />);
       change(field(formId, fieldName), { target: { value: 'Beard trim' } });
       submit(form('appointment'));
@@ -217,7 +215,6 @@ describe('AppointmentForm', () => {
       const fetchSpy = spy();
       render(<AppointmentForm
         stylist="Pepe"
-        onSubmit={() => {}}
         fetch={fetchSpy.fn}
       />);
       submit(form('appointment'));
@@ -229,7 +226,6 @@ describe('AppointmentForm', () => {
       const fetchSpy = spy();
       render(<AppointmentForm
         stylist="Pepe"
-        onSubmit={() => {}}
         fetch={fetchSpy.fn}
       />);
       change(field(formId, fieldName), { target: { value: 'Sara' } });
@@ -364,6 +360,7 @@ describe('AppointmentForm', () => {
     });
 
     it('saves existing value when submiting', async () => {
+      const fetchSpy = spy();
       const today = new Date();
       const availableTimeSlots = {
         Pepe: [
@@ -372,19 +369,22 @@ describe('AppointmentForm', () => {
         ],
       };
       const stylist = 'Pepe';
-      expect.hasAssertions();
+      const { startsAt } = availableTimeSlots[stylist][0];
       render(<AppointmentForm
         today={today}
         availableTimeSlots={availableTimeSlots}
-        startsAt={availableTimeSlots[stylist][0].startsAt}
+        startsAt={startsAt}
         stylist={stylist}
-        onSubmit={({ startsAt }) => expect(startsAt).toEqual(availableTimeSlots[stylist][0].startsAt)}
+        fetch={fetchSpy.fn}
+        onSubmit={() => {}}
       />);
-      await ReactTestUtils.Simulate.submit(form('appointment'));
+      submit(form('appointment'));
+      const fetchOpts = fetchSpy.receivedArgument(1);
+      expect(JSON.parse(fetchOpts.body).startsAt).toEqual(startsAt);
     });
 
     it('saves new value when submitted', () => {
-      expect.hasAssertions();
+      const fetchSpy = spy();
       const today = new Date();
       const availableTimeSlots = {
         Pepe: [
@@ -393,12 +393,13 @@ describe('AppointmentForm', () => {
         ],
       };
       const stylist = 'Pepe';
+      const { startsAt } = availableTimeSlots[stylist][0];
       render(
         <AppointmentForm
           availableTimeSlots={availableTimeSlots}
           today={today}
-          startsAt={availableTimeSlots[stylist][0].startsAt}
-          onSubmit={({ startsAt }) => expect(startsAt).toEqual(availableTimeSlots[stylist][1].startsAt)}
+          startsAt={startsAt}
+          fetch={fetchSpy.fn}
           stylist={stylist}
         />
       );
