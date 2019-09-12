@@ -119,25 +119,29 @@ describe('AppointmentForm', () => {
     });
 
     it('saves existing value when submitted', async () => {
-      const submitSpy = spy();
+      const fetchSpy = spy();
 
       render(<AppointmentForm
         service="Blow-dry"
-        onSubmit={submitSpy.fn}
+        fetch={fetchSpy.fn}
+        onSubmit={() => {}}
       />);
       submit(form('appointment'));
-      expect(submitSpy).toHaveBeenCalled();
-      expect(submitSpy.receivedArgument(0)[fieldName]).toEqual('Blow-dry');
+      const fetchOpts = fetchSpy.receivedArgument(1);
+      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('Blow-dry');
     });
 
     it('saves a new value when submitted', async () => {
-      expect.hasAssertions();
+      const fetchSpy = spy();
       render(<AppointmentForm
         service="Blow-dry"
-        onSubmit={(props) => expect(props.service).toEqual('Beard trim')}
+        fetch={fetchSpy.fn}
+        onSubmit={() => {}}
       />);
       change(field(formId, fieldName), { target: { value: 'Beard trim' } });
       submit(form('appointment'));
+      const fetchOpts = fetchSpy.receivedArgument(1);
+      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('Beard trim');
     });
   });
 
@@ -210,22 +214,28 @@ describe('AppointmentForm', () => {
     });
 
     it('saves existing value when submitted', async () => {
-      expect.hasAssertions();
+      const fetchSpy = spy();
       render(<AppointmentForm
         stylist="Pepe"
-        onSubmit={(props) => expect(props.stylist).toEqual('Pepe')}
+        onSubmit={() => {}}
+        fetch={fetchSpy.fn}
       />);
-      await ReactTestUtils.Simulate.submit(form('appointment'));
+      submit(form('appointment'));
+      const fetchOpts = fetchSpy.receivedArgument(1);
+      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('Pepe');
     });
 
     it('saves a new value when submitted', async () => {
-      expect.hasAssertions();
+      const fetchSpy = spy();
       render(<AppointmentForm
         stylist="Pepe"
-        onSubmit={(props) => expect(props.stylist).toEqual('Sara')}
+        onSubmit={() => {}}
+        fetch={fetchSpy.fn}
       />);
       change(field(formId, fieldName), { target: { value: 'Sara' } });
       submit(form('appointment'));
+      const fetchOpts = fetchSpy.receivedArgument(1);
+      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('Sara');
     });
 
     it('filters the services list according to stylist\'s services', () => {
