@@ -144,15 +144,18 @@ export const AppointmentForm = ({
     return selectedStylist.services;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const result = await window.fetch('/appointments', {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(appointment),
     });
-    const appointmentWithId = await result.json();
-    onSave(appointmentWithId);
+    if (result && result.ok) {
+      const appointmentWithId = await result.json();
+      onSave(appointmentWithId);
+    }
   };
 
   return (

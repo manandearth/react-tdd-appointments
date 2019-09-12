@@ -317,7 +317,7 @@ describe('AppointmentForm', () => {
       render(<AppointmentForm
         availableTimeSlots={availableTimeSlots}
         today={today}
-        stylist="Pepe"
+        stylist={stylist}
       />);
       const cells = timeSlotTable().querySelectorAll('td');
       expect(cells[14].querySelector('input[type="radio"]')).not.toBeNull();
@@ -406,7 +406,31 @@ describe('AppointmentForm', () => {
       expect(saveSpy).toHaveBeenCalled();
     });
 
-    it('does not notify onSave when the POST request returns an error', () => {
+    it('does not notify onSave when the POST request returns an error', async () => {
+      fetchSpy.stubReturnValue(fetchResponseError(availableTimeSlots));
+      const saveSpy = spy();
+      render(
+        <AppointmentForm
+          availableTimeSlots={availableTimeSlots}
+          today={today}
+          // startsAt={startsAt}
+          stylist={stylist}
+          onSave={saveSpy.fn}
+        />
+      );
+      await act(async () => {
+        submit(form('appointment'));
+      });
+      expect(saveSpy).not.toHaveBeenCalled();
+    });
+
+    it('prevents the default action when submitting the form', async () => {
+      const preventDefaultSpy = spy();
+      render(<AppointmentForm />);
+      await submit(form('appointment'), {
+        preventDefault: preventDefaultSpy.fn,
+      });
+      expect(preventDefaultSpy).toHaveBeenCalled();
     });
 
     it('renders an update timeslot table by stylist', () => {
