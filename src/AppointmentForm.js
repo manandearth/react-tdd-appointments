@@ -155,10 +155,10 @@ export const AppointmentForm = ({
       body: JSON.stringify(appointment),
     });
     if (result && result.ok) {
-      const appointmentWithId = await result.json();
-      onSave(appointmentWithId);
+      setError(false);
+      onSave();
     } else {
-      setError('true');
+      setError(true);
     }
   };
 

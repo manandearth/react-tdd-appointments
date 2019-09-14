@@ -3,6 +3,7 @@ import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { AppointmentForm } from '../src/AppointmentForm';
 import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers';
+import 'whatwg-fetch';
 
 describe('AppointmentForm', () => {
   let render;
@@ -23,22 +24,9 @@ describe('AppointmentForm', () => {
       },
       receivedArguments: () => receivedArguments,
       receivedArgument: (n) => receivedArguments[n],
-      stubReturnValue: (value) => returnValue = value,
+      mockReturnValue: (value) => returnValue = value,
     };
   };
-
-  expect.extend({
-    toHaveBeenCalled(received) {
-      if (received.receivedArguments() === undefined) {
-        return {
-          pass: false,
-          message: () => 'Spy was not called',
-        };
-      }
-      return { pass: true, message: 'Spy was called.' };
-    },
-
-  });
 
   const originalFetch = window.fetch;
   let fetchSpy;
@@ -47,9 +35,8 @@ describe('AppointmentForm', () => {
     ({
       render, container, field, form, labelFor, change, submit,
     } = createContainer());
-    fetchSpy = spy();
-    window.fetch = fetchSpy.fn;
-    fetchSpy.stubReturnValue(fetchResponseOk({}));
+    fetchSpy = jest.fn(() => fetchResponseOk({}));
+    window.fetch = fetchSpy;
   });
 
   afterEach = () => {
@@ -63,15 +50,17 @@ describe('AppointmentForm', () => {
     expect(form('appointment')).not.toBeNull();
   });
 
-  it('calls the fetch on submit and returns a 201', () => {
+  it('calls the fetch on submit and returns a 201', async () => {
     render(<AppointmentForm />);
     submit(form('appointment'));
-    expect(fetchSpy).toHaveBeenCalled();
-    expect(fetchSpy.receivedArgument(0)).toEqual('/appointments');
-    const fetchOpts = fetchSpy.receivedArgument(1);
-    expect(fetchOpts.method).toEqual('POST');
-    expect(fetchOpts.credentials).toEqual('same-origin');
-    expect(fetchOpts.headers).toEqual({ 'Content-Type': 'application/json' });
+    expect(fetchSpy).toHaveBeenCalledWith(
+      '/appointments',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+      })
+    );
   });
 
 	  describe('service field', () => {
@@ -139,8 +128,7 @@ describe('AppointmentForm', () => {
         service="Blow-dry"
       />);
       submit(form('appointment'));
-      const fetchOpts = fetchSpy.receivedArgument(1);
-      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('Blow-dry');
+      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual('Blow-dry');
     });
 
     it('saves a new value when submitted', async () => {
@@ -149,8 +137,7 @@ describe('AppointmentForm', () => {
       />);
       change(field(formId, fieldName), { target: { value: 'Beard trim' } });
       submit(form('appointment'));
-      const fetchOpts = fetchSpy.receivedArgument(1);
-      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('Beard trim');
+      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual('Beard trim');
     });
   });
 
@@ -227,8 +214,7 @@ describe('AppointmentForm', () => {
         stylist="Pepe"
       />);
       submit(form('appointment'));
-      const fetchOpts = fetchSpy.receivedArgument(1);
-      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('Pepe');
+      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual('Pepe');
     });
 
     it('saves a new value when submitted', async () => {
@@ -237,8 +223,7 @@ describe('AppointmentForm', () => {
       />);
       change(field(formId, fieldName), { target: { value: 'Sara' } });
       submit(form('appointment'));
-      const fetchOpts = fetchSpy.receivedArgument(1);
-      expect(JSON.parse(fetchOpts.body)[fieldName]).toEqual('Sara');
+      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual('Sara');
     });
 
     it('filters the services list according to stylist\'s services', () => {
@@ -357,15 +342,11 @@ describe('AppointmentForm', () => {
     it('saves existing value when submiting', async () => {
       const { startsAt } = availableTimeSlots[stylist][0];
       render(<AppointmentForm
-        today={today}
-        availableTimeSlots={availableTimeSlots}
         startsAt={startsAt}
         stylist={stylist}
-        onSubmit={() => {}}
       />);
       submit(form('appointment'));
-      const fetchOpts = fetchSpy.receivedArgument(1);
-      expect(JSON.parse(fetchOpts.body).startsAt).toEqual(startsAt);
+      expect(fetchRequestBody(window.fetch)).toMatchObject({ startsAt });
     });
 
     it('saves new value when submitted', () => {
@@ -389,33 +370,29 @@ describe('AppointmentForm', () => {
     });
 
     it('notifies onSave when form is submitted', async () => {
-      fetchSpy.stubReturnValue(fetchResponseOk(availableTimeSlots));
-      const saveSpy = spy();
+      window.fetch.mockReturnValue(fetchResponseOk({ stylist }));
+      const saveSpy = jest.fn();
       render(
         <AppointmentForm
-          availableTimeSlots={availableTimeSlots}
-          today={today}
-          // startsAt={startsAt}
           stylist={stylist}
-          onSave={saveSpy.fn}
+          onSave={saveSpy}
         />
       );
       await act(async () => {
         submit(form('appointment'));
       });
-      expect(saveSpy).toHaveBeenCalled();
+      expect((saveSpy)).toHaveBeenCalled();
     });
 
     it('does not notify onSave when the POST request returns an error', async () => {
-      fetchSpy.stubReturnValue(fetchResponseError(availableTimeSlots));
-      const saveSpy = spy();
+      fetchSpy.mockReturnValue(fetchResponseError(availableTimeSlots));
+      const saveSpy = jest.fn();
       render(
         <AppointmentForm
           availableTimeSlots={availableTimeSlots}
           today={today}
-          // startsAt={startsAt}
           stylist={stylist}
-          onSave={saveSpy.fn}
+          onSave={saveSpy}
         />
       );
       await act(async () => {
@@ -425,16 +402,16 @@ describe('AppointmentForm', () => {
     });
 
     it('prevents the default action when submitting the form', async () => {
-      const preventDefaultSpy = spy();
+      const preventDefaultSpy = jest.fn();
       render(<AppointmentForm />);
       await submit(form('appointment'), {
-        preventDefault: preventDefaultSpy.fn,
+        preventDefault: preventDefaultSpy,
       });
       expect(preventDefaultSpy).toHaveBeenCalled();
     });
 
     it('renders error message when fetch call fails', async () => {
-      fetchSpy.stubReturnValue(fetchResponseError());
+      fetchSpy.mockReturnValue(fetchResponseError());
       render(<AppointmentForm />);
       await submit(form('appointment'));
       const errorElement = container.querySelector('.error');
