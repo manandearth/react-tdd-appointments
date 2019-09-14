@@ -1,9 +1,9 @@
 import React from 'react';
+import 'whatwg-fetch';
 import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { AppointmentForm } from '../src/AppointmentForm';
 import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers';
-import 'whatwg-fetch';
 
 describe('AppointmentForm', () => {
   let render;
@@ -14,34 +14,18 @@ describe('AppointmentForm', () => {
   let change;
   let submit;
 
-  const spy = () => {
-    let receivedArguments;
-    let returnValue;
-    return {
-      fn: (...args) => {
-        receivedArguments = args;
-        return returnValue;
-      },
-      receivedArguments: () => receivedArguments,
-      receivedArgument: (n) => receivedArguments[n],
-      mockReturnValue: (value) => returnValue = value,
-    };
-  };
-
-  const originalFetch = window.fetch;
-  let fetchSpy;
-
   beforeEach(() => {
     ({
       render, container, field, form, labelFor, change, submit,
     } = createContainer());
-    fetchSpy = jest.fn(() => fetchResponseOk({}));
-    window.fetch = fetchSpy;
+    jest
+      .spyOn(window, 'fetch')
+      .mockReturnValue(fetchResponseOk({}));
   });
 
-  afterEach = () => {
-    window.fetch = originalFetch;
-  };
+  afterEach = (() => {
+    window.fetch.mockRestore();
+  });
 
   const formId = 'appointment';
 
@@ -53,7 +37,7 @@ describe('AppointmentForm', () => {
   it('calls the fetch on submit and returns a 201', async () => {
     render(<AppointmentForm />);
     submit(form('appointment'));
-    expect(fetchSpy).toHaveBeenCalledWith(
+    expect(window.fetch).toHaveBeenCalledWith(
       '/appointments',
       expect.objectContaining({
         method: 'POST',
@@ -345,7 +329,7 @@ describe('AppointmentForm', () => {
         startsAt={startsAt}
         stylist={stylist}
       />);
-      submit(form('appointment'));
+      await submit(form('appointment'));
       expect(fetchRequestBody(window.fetch)).toMatchObject({ startsAt });
     });
 
@@ -385,7 +369,7 @@ describe('AppointmentForm', () => {
     });
 
     it('does not notify onSave when the POST request returns an error', async () => {
-      fetchSpy.mockReturnValue(fetchResponseError(availableTimeSlots));
+      window.fetch.mockReturnValue(fetchResponseError(availableTimeSlots));
       const saveSpy = jest.fn();
       render(
         <AppointmentForm
@@ -411,7 +395,7 @@ describe('AppointmentForm', () => {
     });
 
     it('renders error message when fetch call fails', async () => {
-      fetchSpy.mockReturnValue(fetchResponseError());
+      window.fetch.mockReturnValue(fetchResponseError());
       render(<AppointmentForm />);
       await submit(form('appointment'));
       const errorElement = container.querySelector('.error');
