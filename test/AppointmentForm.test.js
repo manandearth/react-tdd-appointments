@@ -3,7 +3,9 @@ import 'whatwg-fetch';
 import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { AppointmentForm } from '../src/AppointmentForm';
-import { fetchResponseOk, fetchResponseError, fetchRequestBody } from './spyHelpers';
+import {
+  fetchResponseOk, fetchResponseError, fetchRequestBody, fetchRequestBody2,
+} from './spyHelpers';
 
 describe('AppointmentForm', () => {
   let render;
@@ -14,6 +16,8 @@ describe('AppointmentForm', () => {
   let change;
   let submit;
 
+  let fetchSpy;
+
   beforeEach(() => {
     ({
       render, container, field, form, labelFor, change, submit,
@@ -23,9 +27,11 @@ describe('AppointmentForm', () => {
       .mockReturnValue(fetchResponseOk({}));
   });
 
-  afterEach = (() => {
+  afterEach(() => {
     window.fetch.mockRestore();
+    // window.fetch = window.fetch;
   });
+
 
   const formId = 'appointment';
 
@@ -325,12 +331,13 @@ describe('AppointmentForm', () => {
 
     it('saves existing value when submiting', async () => {
       const { startsAt } = availableTimeSlots[stylist][0];
+      const tempSpy = jest.fn;
       render(<AppointmentForm
         startsAt={startsAt}
         stylist={stylist}
       />);
-      await submit(form('appointment'));
-      expect(fetchRequestBody(window.fetch)).toMatchObject({ startsAt });
+      submit(form('appointment'));
+      expect(fetchRequestBody2(window.fetch)).toMatchObject({ startsAt });
     });
 
     it('saves new value when submitted', () => {
@@ -365,7 +372,7 @@ describe('AppointmentForm', () => {
       await act(async () => {
         submit(form('appointment'));
       });
-      expect((saveSpy)).toHaveBeenCalled();
+      expect(saveSpy).toHaveBeenCalled();
     });
 
     it('does not notify onSave when the POST request returns an error', async () => {

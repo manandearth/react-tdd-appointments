@@ -119,7 +119,7 @@ export const AppointmentForm = ({
     service,
     startsAt,
   });
-  const [error, setError] = useState('false');
+  const [error, setError] = useState(false);
 
   const handleStylistChange = ({ target: { value } }) => setAppointment(
     {

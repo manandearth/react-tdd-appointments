@@ -8,3 +8,5 @@ export const fetchResponseError = () => {
 };
 
 export const fetchRequestBody = (fetchSpy) => JSON.parse(fetchSpy.mock.calls[0][1].body);
+
+export const fetchRequestBody2 = (fetchSpy) => JSON.parse(fetchSpy.mock.calls[0][1].body);
