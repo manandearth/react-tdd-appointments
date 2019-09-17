@@ -29,7 +29,6 @@ describe('AppointmentForm', () => {
 
   afterEach(() => {
     window.fetch.mockRestore();
-    // window.fetch = window.fetch;
   });
 
 
@@ -53,27 +52,99 @@ describe('AppointmentForm', () => {
     );
   });
 
-	  describe('service field', () => {
-    const findOption = (dropdownNode, textContent) => {
-      const options = Array.from(dropdownNode.childNodes);
-      return options.find(
-        (option) => option.textContent === textContent
-      );
-    };
-    const fieldName = 'service';
+  const selectableStylists = [
+    {
+      name: 'Jon',
+      services: ['Cut', 'Blow-dry', 'Beard trim', 'Cut & Beard trim'],
+    },
+    {
+      name: 'Jane',
+      services: ['Blow-dry', 'Extensions', 'Cut & color', 'Cut'],
+    }];
 
+
+  const findOption = (dropdownNode, textContent) => {
+    const options = Array.from(dropdownNode.childNodes);
+    return options.find(
+      (option) => option.textContent === textContent
+    );
+  };
+
+  const rendersSelectBox = (fieldName) => {
     it('renders as a select box', () => {
       render(<AppointmentForm />);
       expect(field(formId, fieldName)).not.toBeNull();
       expect(field(formId, fieldName).tagName).toEqual('SELECT');
     });
+  };
 
+  const hasBlankValue = (fieldName) => {
     it('initially has a blank value chosen', () => {
       render(<AppointmentForm />);
       const firstNode = field(formId, fieldName).childNodes[0];
       expect(firstNode.value).toEqual('');
       expect(firstNode.selected).toBeTruthy();
     });
+  };
+
+  const rendersLabelForInputField = (fieldName) => {
+    it('renders a label for the input field', () => {
+      render(<AppointmentForm />);
+      expect(labelFor(fieldName)).not.toBeNull();
+    });
+  };
+
+  const preselectsExistingValue = (fieldName, value) => {
+    it('preselects the existing value', () => {
+      // const services = ['Cut', 'Blow-dry'];
+      render(<AppointmentForm
+        {...{ [fieldName]: value }}
+      />);
+      const option = findOption(field(formId, fieldName), value);
+      expect(option.selected).toBeTruthy();
+    });
+  };
+
+  const assignsMatchingId = (fieldName) => {
+    it('assigns an id that matches the label id', () => {
+      render(<AppointmentForm />);
+      expect(field(formId, fieldName).id).toEqual(fieldName);
+    });
+  };
+
+  const saveExistingValue = (fieldName, value) => {
+    it('saves existing value when submitted', async () => {
+      render(<AppointmentForm
+        {...{ [fieldName]: value }}
+      />);
+      submit(form('appointment'));
+      expect(fetchRequestBody(window.fetch)[fieldName])
+        .toEqual(value);
+    });
+  };
+
+  const saveNewValue = (fieldName, oldValue, newValue) => {
+    it('saves a new value when submitted', async () => {
+      render(<AppointmentForm
+        {...{ [fieldName]: oldValue }}
+        selectableStylists={selectableStylists}
+      />);
+      change(field(formId, fieldName), { target: { value: newValue } });
+      submit(form('appointment'));
+      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual(newValue);
+    });
+  };
+
+	  describe('service field', () => {
+    const fieldName = 'service';
+
+    rendersSelectBox(fieldName);
+    hasBlankValue(fieldName);
+    rendersLabelForInputField(fieldName);
+    preselectsExistingValue(fieldName, 'Blow-dry');
+    assignsMatchingId(fieldName);
+    saveExistingValue(fieldName, 'Blow-dry');
+    saveNewValue(fieldName, 'Blow-dry', 'Cut');
 
     it('lists all salon services', () => {
       const selectableServices = [
@@ -92,44 +163,8 @@ describe('AppointmentForm', () => {
         expect.arrayContaining(selectableServices)
       );
     });
-
-    it('preselects the existing value', () => {
-      const services = ['Cut', 'Blow-dry'];
-      render(<AppointmentForm
-        selectedServices={services}
-        service="Blow-dry"
-      />);
-      const option = findOption(field(formId, fieldName), 'Blow-dry');
-      expect(option.selected).toBeTruthy();
-    });
-
-    it('renders a label', () => {
-      render(<AppointmentForm />);
-      expect(labelFor(fieldName)).not.toBeNull();
-    });
-
-    it('assigns an id that matches the label id', () => {
-      render(<AppointmentForm />);
-      expect(field(formId, fieldName).id).toEqual(fieldName);
-    });
-
-    it('saves existing value when submitted', async () => {
-      render(<AppointmentForm
-        service="Blow-dry"
-      />);
-      submit(form('appointment'));
-      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual('Blow-dry');
-    });
-
-    it('saves a new value when submitted', async () => {
-      render(<AppointmentForm
-        service="Blow-dry"
-      />);
-      change(field(formId, fieldName), { target: { value: 'Beard trim' } });
-      submit(form('appointment'));
-      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual('Beard trim');
-    });
   });
+
 
   describe('stylist field', () => {
     const findOption = (dropdownNode, textContent) => {
@@ -140,33 +175,13 @@ describe('AppointmentForm', () => {
     };
     const fieldName = 'stylist';
 
-    const selectableStylists = [
-      {
-        name: 'Jon',
-        services: ['Cut', 'Blow-dry', 'Beard trim', 'Cut & Beard trim'],
-      },
-      {
-        name: 'Jane',
-        services: ['Blow-dry', 'Extensions', 'Cut & color', 'Cut'],
-      }];
-
-    it('renders as a select box', () => {
-      render(<AppointmentForm />);
-      expect(field(formId, fieldName)).not.toBeNull();
-      expect(field(formId, fieldName).tagName).toEqual('SELECT');
-    });
-
-    it('renders a label for the input field', () => {
-      render(<AppointmentForm />);
-      expect(labelFor(fieldName)).not.toBeNull();
-    });
-
-    it('initially has a blank value chosen', () => {
-      render(<AppointmentForm />);
-      const firstNode = field(formId, fieldName).childNodes[0];
-      expect(firstNode.value).toEqual('');
-      expect(firstNode.selected).toBeTruthy();
-    });
+    rendersSelectBox(fieldName);
+    hasBlankValue(fieldName);
+    rendersLabelForInputField(fieldName);
+    preselectsExistingValue(fieldName, 'Jon');
+    assignsMatchingId(fieldName);
+    saveExistingValue(fieldName, 'Jon');
+    saveNewValue(fieldName, 'Jon', 'Jane');
 
     it('lists all stylists', () => {
       render(
@@ -181,39 +196,6 @@ describe('AppointmentForm', () => {
       expect(renderedStylists).toEqual(
         expect.arrayContaining(selectableStylists.map((s) => s.name))
       );
-    });
-
-    it('preselects the existing value', () => {
-      const stylists = [{ name: 'Jon', services: ['Cut', 'Cut & color'] },
-        { name: 'Jeff', services: ['Extensions', 'Cut'] }];
-      render(<AppointmentForm
-        selectableStylists={stylists}
-        stylist="Jon"
-      />);
-      const option = findOption(field(formId, fieldName), 'Jon');
-      expect(option.selected).toBeTruthy();
-    });
-
-    it('assigns an id that matches the label id', () => {
-      render(<AppointmentForm />);
-      expect(field(formId, fieldName).id).toEqual(fieldName);
-    });
-
-    it('saves existing value when submitted', async () => {
-      render(<AppointmentForm
-        stylist="Pepe"
-      />);
-      submit(form('appointment'));
-      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual('Pepe');
-    });
-
-    it('saves a new value when submitted', async () => {
-      render(<AppointmentForm
-        stylist="Pepe"
-      />);
-      change(field(formId, fieldName), { target: { value: 'Sara' } });
-      submit(form('appointment'));
-      expect(fetchRequestBody(window.fetch)[fieldName]).toEqual('Sara');
     });
 
     it('filters the services list according to stylist\'s services', () => {
