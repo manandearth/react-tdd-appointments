@@ -27,7 +27,6 @@ describe('CustomerForm', () => {
   afterEach(() => {
     window.fetch.mockRestore();
   });
-  // const form = (id) => element(`form[id="${id}"]`);
 
   const expectToBeInputFieldOfTypeText = (formElement) => {
 	  expect(formElement).not.toBeNull();
@@ -40,8 +39,6 @@ describe('CustomerForm', () => {
     expect(form('customer')).not.toBeNull();
   });
 
-  // const field = (formId, name) => form(formId).elements[name];
-
   const itRendersAsATextBox = (fieldName) => it('renders as a test box', () => {
     render(<CustomerForm />);
     expectToBeInputFieldOfTypeText(field('customer', fieldName));
@@ -50,7 +47,6 @@ describe('CustomerForm', () => {
     render(<CustomerForm {...{ [fieldName]: 'value' }} />);
     expect(field('customer', fieldName).value).toEqual('value');
   });
-  // const labelFor = (formElement) => element(`label[for="${formElement}"]`);
   const itRendersALabel = (fieldName) => it('renders a label', () => {
     render(<CustomerForm />);
     expect(labelFor(fieldName)).not.toBeNull();
@@ -149,11 +145,19 @@ describe('CustomerForm', () => {
     expect(preventDefaultSpy).toHaveBeenCalled();
   });
   it('renders error message when fetch call fails', async () => {
-    window.fetch.mockReturnValue(Promise.resolve({ ok: false }));
+    window.fetch.mockReturnValue(fetchResponseError());
     render(<CustomerForm />);
     await submit(form('customer'));
     const errorElement = element('.error');
     expect(errorElement).not.toBeNull();
     expect(errorElement.textContent).toMatch('error occured');
+  });
+  it('clears the error state when the form succeeds', async () => {
+    window.fetch.mockReturnValueOnce(fetchResponseError());
+    window.fetch.mockReturnValue(fetchResponseOk());
+    render(<CustomerForm />);
+    await submit(form('customer'));
+    await submit(form('customer'));
+    expect(element('.error')).toBeNull();
   });
 });

@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import 'whatwg-fetch';
 
 const timeIncrement = (numTimes, startTime, increment) => Array(numTimes)
   .fill([startTime])
@@ -103,7 +104,6 @@ const TimeSlotTable = ({
 export const AppointmentForm = ({
   selectableServices,
   service,
-  onSubmit,
   salonOpensAt,
   salonClosesAt,
   today,
@@ -111,6 +111,7 @@ export const AppointmentForm = ({
   startsAt,
   selectableStylists,
   stylist,
+  onSave,
 }) => {
   const dates = weeklyDateValues(today);
   const [appointment, setAppointment] = useState({
@@ -118,6 +119,8 @@ export const AppointmentForm = ({
     service,
     startsAt,
   });
+  const [error, setError] = useState(false);
+
   const handleStylistChange = ({ target: { value } }) => setAppointment(
     {
       ...appointment,
@@ -143,9 +146,25 @@ export const AppointmentForm = ({
     return selectedStylist.services;
   };
 
-  return (
-    <form id="appointment" onSubmit={() => onSubmit(appointment)}>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const result = await window.fetch('/appointments', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(appointment),
+    });
+    if (result && result.ok) {
+      setError(false);
+      onSave();
+    } else {
+      setError(true);
+    }
+  };
 
+  return (
+    <form id="appointment" onSubmit={handleSubmit}>
+      { error ? <Error /> : null}
       <label htmlFor="stylist">Stylist</label>
       <select
         name="stylist"
@@ -183,6 +202,9 @@ export const AppointmentForm = ({
     </form>
   );
 };
+
+const Error = () => <div className="error">an error occured</div>;
+
 AppointmentForm.defaultProps = {
   availableTimeSlots: {},
   today: new Date(),
@@ -201,4 +223,5 @@ AppointmentForm.defaultProps = {
     { name: 'Pepe', services: ['Cut', 'Beard trim', 'Cut & Beard trim'] },
     { name: 'Paul', services: ['Cut', 'Extensions', 'Cut & Color', 'Blow-dry'] },
     { name: 'Sara', services: ['Cut', 'Beard trim', 'Cut & Beard trim', 'Extensions', 'Blow-dry', 'Cut & color'] }],
+  onSave: () => {},
 };
