@@ -4,7 +4,7 @@ import ReactTestUtils, { act } from 'react-dom/test-utils';
 import { createContainer } from './domManipulators';
 import { AppointmentForm } from '../src/AppointmentForm';
 import {
-  fetchResponseOk, fetchResponseError, fetchRequestBody, fetchRequestBody2,
+  fetchResponseOk, fetchResponseError, fetchRequestBody,
 } from './spyHelpers';
 
 describe('AppointmentForm', () => {
@@ -313,13 +313,11 @@ describe('AppointmentForm', () => {
 
     it('saves existing value when submiting', async () => {
       const { startsAt } = availableTimeSlots[stylist][0];
-      const tempSpy = jest.fn;
       render(<AppointmentForm
         startsAt={startsAt}
-        stylist={stylist}
       />);
       submit(form('appointment'));
-      expect(fetchRequestBody2(window.fetch)).toMatchObject({ startsAt });
+      expect(fetchRequestBody(window.fetch)).toMatchObject({ startsAt });
     });
 
     it('saves new value when submitted', () => {
