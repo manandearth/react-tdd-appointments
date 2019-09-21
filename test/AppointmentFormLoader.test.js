@@ -3,6 +3,7 @@ import 'whatwg-fetch';
 import { createContainer } from './domManipulators';
 import { AppointmentFormLoader } from '../src/AppointmentFormLoader';
 import { fetchResponseOk } from './spyHelpers';
+import * as AppointmentFormExports from '../src/AppointmentForm';
 
 describe('AppointmentFormLoader', () => {
   let render;
@@ -18,9 +19,14 @@ describe('AppointmentFormLoader', () => {
     jest
       .spyOn(window, 'fetch')
       .mockReturnValue(fetchResponseOk(availableTimeSlots));
+    jest
+      .spyOn(AppointmentFormExports, 'AppointmentForm')
+      .mockReturnValue(null);
   });
+
   afterEach(() => {
     window.fetch.mockRestore();
+    AppointmentFormExports.AppointmentForm.mockRestore();
   });
 
   it('fetches data when component is mounted', () => {
@@ -32,6 +38,14 @@ describe('AppointmentFormLoader', () => {
         credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
       })
+    );
+  });
+  it('initially passes no data to AppointmentForm', () => {
+    render(<AppointmentFormLoader />);
+
+    expect(AppointmentFormExports.AppointmentForm).toHaveBeenCalledWith(
+      { availableTimeSlots: [] },
+      expect.anything()
     );
   });
 });
