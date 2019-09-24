@@ -18,6 +18,7 @@ export const createContainer = () => {
   return {
     element,
     render: (component) => act(() => { ReactDOM.render(component, container); }),
+    renderAndWait: async (component) => await act(async () => ReactDOM.render(component, container)),
     container,
     form,
     field,

@@ -6,8 +6,8 @@ import { fetchResponseOk } from './spyHelpers';
 import * as AppointmentFormExports from '../src/AppointmentForm';
 
 describe('AppointmentFormLoader', () => {
-  let render;
   let container;
+  let renderAndWait;
 
   const today = new Date();
   const availableTimeSlots = [
@@ -15,7 +15,7 @@ describe('AppointmentFormLoader', () => {
   ];
 
   beforeEach(() => {
-    ({ render, container } = createContainer());
+    ({ renderAndWait, container } = createContainer());
     jest
       .spyOn(window, 'fetch')
       .mockReturnValue(fetchResponseOk(availableTimeSlots));
@@ -29,8 +29,8 @@ describe('AppointmentFormLoader', () => {
     AppointmentFormExports.AppointmentForm.mockRestore();
   });
 
-  it('fetches data when component is mounted', () => {
-    render(<AppointmentFormLoader />);
+  it('fetches data when component is mounted', async () => {
+    await renderAndWait(<AppointmentFormLoader />);
     expect(window.fetch).toHaveBeenCalledWith(
       '/availableTimeSlots',
       expect.objectContaining({
@@ -40,11 +40,22 @@ describe('AppointmentFormLoader', () => {
       })
     );
   });
-  it('initially passes no data to AppointmentForm', () => {
-    render(<AppointmentFormLoader />);
+
+  it('initially passes no data to AppointmentForm', async () => {
+    await renderAndWait(<AppointmentFormLoader />);
 
     expect(AppointmentFormExports.AppointmentForm).toHaveBeenCalledWith(
       { availableTimeSlots: [] },
+      expect.anything()
+    );
+  });
+  it('displays time slots that are fetched on mount', async () => {
+    await renderAndWait(<AppointmentFormLoader />);
+
+    expect(AppointmentFormExports.AppointmentForm).toHaveBeenLastCalledWith(
+      {
+        availableTimeSlots,
+      },
       expect.anything()
     );
   });
