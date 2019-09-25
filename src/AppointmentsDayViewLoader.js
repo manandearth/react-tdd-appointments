@@ -19,7 +19,7 @@ export const AppointmentsDayViewLoader = ({ today }) => {
       setAppointments(await result.json());
     };
     fetchAppointments();
-  }, []);
+  }, [today]);
 
   return <AppointmentsDayView appointments={appointments} />;
 };
