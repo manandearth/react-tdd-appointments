@@ -15,6 +15,7 @@ describe('AppointmentForm', () => {
   let labelFor;
   let change;
   let submit;
+  const customer = { id: 123 };
 
   let fetchSpy;
 
@@ -40,7 +41,9 @@ describe('AppointmentForm', () => {
   });
 
   it('calls the fetch on submit and returns a 201', async () => {
-    render(<AppointmentForm />);
+    render(<AppointmentForm
+      customer={customer}
+    />);
     submit(form('appointment'));
     expect(window.fetch).toHaveBeenCalledWith(
       '/appointments',
@@ -115,7 +118,10 @@ describe('AppointmentForm', () => {
   const saveExistingValue = (fieldName, value) => {
     it('saves existing value when submitted', async () => {
       render(<AppointmentForm
-        {...{ [fieldName]: value }}
+        {...{
+          [fieldName]: value,
+          customer,
+        }}
       />);
       submit(form('appointment'));
       expect(fetchRequestBody(window.fetch)[fieldName])
@@ -126,7 +132,10 @@ describe('AppointmentForm', () => {
   const saveNewValue = (fieldName, oldValue, newValue) => {
     it('saves a new value when submitted', async () => {
       render(<AppointmentForm
-        {...{ [fieldName]: oldValue }}
+        {...{
+          [fieldName]: oldValue,
+          customer,
+        }}
         selectableStylists={selectableStylists}
       />);
       change(field(formId, fieldName), { target: { value: newValue } });
@@ -137,6 +146,7 @@ describe('AppointmentForm', () => {
 
 	  describe('service field', () => {
     const fieldName = 'service';
+    const customer = { id: 123 };
 
     rendersSelectBox(fieldName);
     hasBlankValue(fieldName);
@@ -174,6 +184,7 @@ describe('AppointmentForm', () => {
       );
     };
     const fieldName = 'stylist';
+    const customer = { id: 123 };
 
     rendersSelectBox(fieldName);
     hasBlankValue(fieldName);
@@ -219,6 +230,7 @@ describe('AppointmentForm', () => {
   describe('time slot table', () => {
     const today = new Date(2018, 11, 1);
     const stylist = 'Pepe';
+    const customer = { id: 123 };
     const timeSlotTable = () => container.querySelector('table#time-slots');
 
     const startsAtField = (index) => container.querySelectorAll('input[name="startsAt"]') [
@@ -315,6 +327,7 @@ describe('AppointmentForm', () => {
       const { startsAt } = availableTimeSlots[stylist][0];
       render(<AppointmentForm
         startsAt={startsAt}
+        customer={customer}
       />);
       submit(form('appointment'));
       expect(fetchRequestBody(window.fetch)).toMatchObject({ startsAt });
@@ -347,6 +360,7 @@ describe('AppointmentForm', () => {
         <AppointmentForm
           stylist={stylist}
           onSave={saveSpy}
+          customer={customer}
         />
       );
       await act(async () => {
@@ -383,7 +397,9 @@ describe('AppointmentForm', () => {
 
     it('renders error message when fetch call fails', async () => {
       window.fetch.mockReturnValue(fetchResponseError());
-      render(<AppointmentForm />);
+      render(<AppointmentForm
+        customer={customer}
+      />);
       await submit(form('appointment'));
       const errorElement = container.querySelector('.error');
       expect(errorElement).not.toBeNull();
@@ -399,6 +415,13 @@ describe('AppointmentForm', () => {
       const timesOfDay = timeSlotTable().querySelectorAll('input');
       const firstAvailable = Array.from(timesOfDay);
       expect(firstAvailable[0].value).toEqual(today.setHours(10, 0, 0, 0).toString());
+    });
+  });
+  it('passes the customer id to fetch when submitting', async () => {
+    render(<AppointmentForm customer={customer} />);
+    await submit(form('appointment'));
+    expect(fetchRequestBody(window.fetch)).toMatchObject({
+      customer: customer.id,
     });
   });
 });
