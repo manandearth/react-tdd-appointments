@@ -1,8 +1,21 @@
 import React from 'react';
 
 export const childrenOf = (element) => {
-  if (!element.props.children) {
+  if (typeof element === 'string') {
     return [];
   }
-  return element.props.children;
+  const {
+    props: { children },
+  } = element;
+
+  if (!children) {
+    return [];
+  }
+  if (typeof children === 'string') {
+    return [children];
+  }
+  if (Array.isArray(children)) {
+    return children;
+  }
+  return [children];
 };
