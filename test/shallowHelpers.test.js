@@ -25,7 +25,16 @@ describe('element matching', () => {
       <p>B</p>,
     ]);
   });
+  it('finds indirect childrens', () => {
+    render(<TestComponent>
+      <div>
+        <p>A</p>
+      </div>
+           </TestComponent>);
+    expect(elementMatching(type('p'))).toEqual([<p>A</p>]);
+  });
 });
+
 describe('child', () => {
   let render; let
     child;
