@@ -19,7 +19,7 @@ export const createShallowRenderer = () => {
 
   return {
     render: (component) => renderer.render(component),
-    elementMatching: (matcherFn) => elementMatching(renderer.getRenderOutput(), matcherFn),
+    elementMatching: (matcherFn) => elementMatching(renderer.getRenderOutput(), matcherFn)[0],
     child: (n) => childrenOf(renderer.getRenderOutput())[n],
   };
 };

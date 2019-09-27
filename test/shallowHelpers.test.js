@@ -15,23 +15,14 @@ describe('element matching', () => {
     ({ render, elementMatching } = createShallowRenderer());
   });
 
-  it('finds multiple direct children', () => {
+  it('finds the first direct child', () => {
     render(<TestComponent>
       <p>A</p>
       <p>B</p>
            </TestComponent>);
-    expect(elementMatching(type('p'))).toEqual([
-      <p>A</p>,
-      <p>B</p>,
-    ]);
-  });
-  it('finds indirect childrens', () => {
-    render(<TestComponent>
-      <div>
-        <p>A</p>
-      </div>
-           </TestComponent>);
-    expect(elementMatching(type('p'))).toEqual([<p>A</p>]);
+    expect(elementMatching(type('p'))).toEqual(
+      <p>A</p>
+    );
   });
 });
 
