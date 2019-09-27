@@ -112,6 +112,7 @@ export const AppointmentForm = ({
   selectableStylists,
   stylist,
   onSave,
+  customer,
 }) => {
   const dates = weeklyDateValues(today);
   const [appointment, setAppointment] = useState({
@@ -152,7 +153,10 @@ export const AppointmentForm = ({
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(appointment),
+      body: JSON.stringify({
+        ...appointment,
+        customer: customer.id,
+      }),
     });
     if (result && result.ok) {
       setError(false);
