@@ -5,6 +5,27 @@ const TestComponent = ({ children }) => (
   <>{children}</>
 );
 
+const type = (typeName) => (element) => element.type === typeName;
+
+describe('element matching', () => {
+  let render; let
+    elementMatching;
+
+  beforeEach(() => {
+    ({ render, elementMatching } = createShallowRenderer());
+  });
+
+  it('finds multiple direct children', () => {
+    render(<TestComponent>
+      <p>A</p>
+      <p>B</p>
+           </TestComponent>);
+    expect(elementMatching(type('p'))).toEqual([
+      <p>A</p>,
+      <p>B</p>,
+    ]);
+  });
+});
 describe('child', () => {
   let render; let
     child;

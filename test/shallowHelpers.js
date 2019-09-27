@@ -1,11 +1,14 @@
 import React from 'react';
 import ShallowRenderer from 'react-test-renderer/shallow';
 
+const elementMatching = (element, matcherFn) => childrenOf(element).filter(matcherFn);
+
 export const createShallowRenderer = () => {
   const renderer = new ShallowRenderer();
 
   return {
     render: (component) => renderer.render(component),
+    elementMatching: (matcherFn) => elementMatching(renderer.getRenderOutput(), matcherFn),
     child: (n) => childrenOf(renderer.getRenderOutput())[n],
   };
 };
