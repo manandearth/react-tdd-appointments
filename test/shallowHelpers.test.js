@@ -1,11 +1,10 @@
 import React from 'react';
-import { createShallowRenderer, childrenOf } from './shallowHelpers';
+import { createShallowRenderer, childrenOf, type } from './shallowHelpers';
 
 const TestComponent = ({ children }) => (
   <>{children}</>
 );
 
-const type = (typeName) => (element) => element.type === typeName;
 
 describe('element matching', () => {
   let render; let
