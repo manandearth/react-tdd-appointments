@@ -4,6 +4,7 @@ import { AppointmentsDayViewLoader } from './AppointmentsDayViewLoader';
 
 export const App = () => (
   <>
+    <div className="button-bar" />
     <AppointmentsDayViewLoader />
   </>
 );
