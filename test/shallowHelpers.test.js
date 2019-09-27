@@ -17,6 +17,13 @@ describe('child', () => {
     render(<TestComponent />);
     expect(child(0)).not.toBeDefined();
   });
+  it('returned child of rendered element', () => {
+    render(<TestComponent>
+      <p>A</p>
+      <p>B</p>
+           </TestComponent>);
+    expect(child(1)).toEqual(<p>B</p>);
+  });
 });
 
 describe('childrenOf', () => {
