@@ -15,6 +15,8 @@ export const App = () => {
     setView('addAppointment');
   },
   []);
+  const transitionToDayView = useCallback(() => setView('dayView'),
+    []);
 
   switch (view) {
     case 'addCustomer':
@@ -24,6 +26,7 @@ export const App = () => {
       return (
         <AppointmentFormLoader
           customer={customer}
+          onSave={transitionToDayView}
         />
       );
     default:
