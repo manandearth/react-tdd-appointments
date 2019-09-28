@@ -1,16 +1,26 @@
 import React from 'react';
-import { createShallowRenderer, type } from './shallowHelpers';
+import {
+  createShallowRenderer, type, childrenOf, className, click, id,
+} from './shallowHelpers';
 import { App } from '../src/App';
 import { AppointmentsDayViewLoader } from '../src/AppointmentsDayViewLoader';
+import { CustomerForm } from '../src/CustomerForm';
 
 describe('App', () => {
-  let render; let
-    elementMatching;
+  let render;
+  let elementMatching;
   let child;
 
   beforeEach(() => {
-    ({ render, elementMatching, child } = createShallowRenderer());
+    ({
+      render, elementMatching, child,
+    } = createShallowRenderer());
   });
+
+  const beginAddingCustomerAndAppointment = () => {
+    render(<App />);
+    click(elementMatching(id('addCustomer')));
+  };
 
   it('initially shows the DayViewLoader', () => {
     render(<App />);
@@ -22,5 +32,18 @@ describe('App', () => {
     render(<App />);
     expect(child(0).type).toEqual('div');
     expect(child(0).props.className).toEqual('button-bar');
+  });
+  it('has a button to initiate add customer and appointment action', () => {
+    render(<App />);
+    const buttons = childrenOf(
+      elementMatching(className('button-bar'))
+    );
+    expect(buttons[0].type).toEqual('button');
+    expect(buttons[0].props.children).toEqual('Add customer and appointment');
+  });
+
+  it('displays the CustomerForm when the button is clicked', () => {
+    beginAddingCustomerAndAppointment();
+    expect(elementMatching(type(CustomerForm))).toBeDefined();
   });
 });
