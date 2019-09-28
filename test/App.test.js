@@ -65,4 +65,10 @@ describe('App', () => {
       elementMatching(type(AppointmentFormLoader))
     ).toBeDefined();
   });
+  it('passes the customer to the AppointmentForm', async () => {
+    const customer = { id: 123 };
+    beginAddingCustomerAndAppointment();
+    saveCustomer(customer);
+    expect(elementMatching(type(AppointmentFormLoader)).props.customer).toBe(customer);
+  });
 });

@@ -6,11 +6,15 @@ import { AppointmentFormLoader } from './AppointmentFormLoader';
 
 export const App = () => {
   const [view, setView] = useState('dayView');
+  const [customer, setCustomer] = useState();
   const transitionToAddCustomer = useCallback(
     () => setView('addCustomer'), []
   );
-  const transitionToAddAppointment = useCallback(() => setView('addAppointment'),
-    []);
+  const transitionToAddAppointment = useCallback((customer) => {
+    setCustomer(customer);
+    setView('addAppointment');
+  },
+  []);
 
   switch (view) {
     case 'addCustomer':
@@ -18,7 +22,10 @@ export const App = () => {
         <CustomerForm onSave={transitionToAddAppointment} />);
     case 'addAppointment':
       return (
-        <AppointmentFormLoader />);
+        <AppointmentFormLoader
+          customer={customer}
+        />
+      );
     default:
       return (
         <>
