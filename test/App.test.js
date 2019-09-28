@@ -46,4 +46,12 @@ describe('App', () => {
     beginAddingCustomerAndAppointment();
     expect(elementMatching(type(CustomerForm))).toBeDefined();
   });
+  it('hides the AppointmentsDayViewLoader when button is clicked', () => {
+    beginAddingCustomerAndAppointment();
+    expect(elementMatching(type(AppointmentsDayViewLoader))).not.toBeDefined();
+  });
+  it('hides the button bar when the button is clicked', async () => {
+    beginAddingCustomerAndAppointment();
+    expect(elementMatching(type('button-bar'))).not.toBeDefined();
+  });
 });
