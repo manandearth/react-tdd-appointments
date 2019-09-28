@@ -5,6 +5,7 @@ import {
 import { App } from '../src/App';
 import { AppointmentsDayViewLoader } from '../src/AppointmentsDayViewLoader';
 import { CustomerForm } from '../src/CustomerForm';
+import { AppointmentFormLoader } from '../src/AppointmentFormLoader';
 
 describe('App', () => {
   let render;
@@ -52,6 +53,16 @@ describe('App', () => {
   });
   it('hides the button bar when the button is clicked', async () => {
     beginAddingCustomerAndAppointment();
-    expect(elementMatching(type('button-bar'))).not.toBeDefined();
+    expect(elementMatching(className('button-bar'))).not.toBeTruthy();
+  });
+
+  const saveCustomer = (customer) => elementMatching(type(CustomerForm)).props.onSave(customer);
+
+  it('displays the AppointmentFormLoader after the CustomerForm is submitted', async () => {
+    beginAddingCustomerAndAppointment();
+    saveCustomer();
+    expect(
+      elementMatching(type(AppointmentFormLoader))
+    ).toBeDefined();
   });
 });
