@@ -14,9 +14,10 @@ describe('CustomerForm', () => {
   let element;
   let change;
   let submit;
+  let blur;
   beforeEach(() => {
     ({
-      render, container, form, field, labelFor, element, change, submit,
+      render, container, form, field, labelFor, element, change, submit, blur,
     } = createContainer());
     window.fetch = window.fetch;
     jest
